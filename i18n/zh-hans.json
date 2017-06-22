@@ -96,6 +96,7 @@
 "BTN_GENERATE_SCRIPTHASH":"生成脚本哈希",
 "BTN_GENERATE_ADDRESS":"生成地址",
 
+"WARNING":"警告",
 "BALANCE":"余额",
 "ASSET":"资产",
 "AMOUNT":"数量",

@@ -1,5 +1,3 @@
-const restapi_token = 'http://139.196.243.115:18080/oauth-server/oc/v3/oauth2/authorize';
-
 var app = angular.module('neow', ['pascalprecht.translate']);
 
 app.config( ['$compileProvider', function( $compileProvider ) {
@@ -375,6 +373,46 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval)
 			restapi_host : "http://seed5.antshares.org",
 			restapi_port : "20332",
 			webapi_host  : "http://testnet.antchain.org",
+			webapi_port  : "80",
+		},
+		{
+			hostName	 : "NEO Mainnet Seed1",
+			hostProvider : "neo.org",
+			restapi_host : "http://seed1.antshares.org",
+			restapi_port : "10332",
+			webapi_host  : "http://www.antchain.org",
+			webapi_port  : "80",
+		},
+		{
+			hostName	 : "NEO Mainnet Seed2",
+			hostProvider : "neo.org",
+			restapi_host : "http://seed2.antshares.org",
+			restapi_port : "10332",
+			webapi_host  : "http://www.antchain.org",
+			webapi_port  : "80",
+		},
+		{
+			hostName	 : "NEO Mainnet Seed3",
+			hostProvider : "neo.org",
+			restapi_host : "http://seed3.antshares.org",
+			restapi_port : "10332",
+			webapi_host  : "http://www.antchain.org",
+			webapi_port  : "80",
+		},
+		{
+			hostName	 : "NEO Mainnet Seed4",
+			hostProvider : "neo.org",
+			restapi_host : "http://seed4.antshares.org",
+			restapi_port : "10332",
+			webapi_host  : "http://www.antchain.org",
+			webapi_port  : "80",
+		},
+		{
+			hostName	 : "NEO Mainnet Seed5",
+			hostProvider : "neo.org",
+			restapi_host : "http://seed5.antshares.org",
+			restapi_port : "10332",
+			webapi_host  : "http://www.antchain.org",
 			webapi_port  : "80",
 		},
 	];
