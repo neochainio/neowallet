@@ -96,6 +96,7 @@
 "BTN_GENERATE_SCRIPTHASH":"Generate ScriptHash",
 "BTN_GENERATE_ADDRESS":"Generate Address",
 
+"WARNING":"WARNING",
 "BALANCE":"Balance",
 "ASSET":"Asset",
 "AMOUNT":"Amount",
