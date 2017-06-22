@@ -1,0 +1,65 @@
+
+html,body{  
+    height: 100%;
+    margin: 0;  
+    padding: 0;  
+}
+
+.main {
+    min-height: 100%;  
+    padding-bottom: 200px;
+}
+
+.glyphicon {
+	margin-right:1em;
+}
+
+.alert.popup{
+	position:fixed;
+	border-radius:0;
+	margin:0
+}
+
+.alert.popup a{
+	text-decoration: underline;
+}
+
+span {
+	word-break:break-all; 
+}
+
+.btn-address .caretico {
+margin-left:1em;
+}
+
+.btn-address button, .btn-address ul li a {
+	text-transform: none;
+}
+
+/* hash calc */
+#dropTarget {
+	width: 100%;
+	height: 200px;
+	background: #ccc;
+	border: 1px solid #999;
+	text-align: center;
+	line-height: 200px;
+}
+
+.modal-title-warning {
+	color: #ff0000;
+}
+
+.footer {
+	width:100%;
+	background-color: #3E3F3A;
+	padding-top:3em;
+	padding-bottom: 3em;
+	
+	height: 100px;  
+    margin-top: -100px;
+}
+
+.footer p {
+	color: #fff;
+}
