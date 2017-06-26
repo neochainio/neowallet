@@ -1,4 +1,4 @@
-var app = angular.module('neow', ['pascalprecht.translate']);
+var app = angular.module('neow', ['pascalprecht.translate','ui.bootstrap']);
 
 app.config( ['$compileProvider', function( $compileProvider ) {
 	 $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|blob|ftp|mailto|tel|file|sms):/);
@@ -69,6 +69,61 @@ app.directive('onReadFile', function ($parse) {
 			});
 		}
 	};
+});
+
+app.controller('ModalInstanceCtrl', function($scope, $modalInstance, items) {
+	$scope.txModify = false;
+
+	$scope.FromAddress = Wallet.ToAddress(hexstring2ab(items.fromAddress));
+
+	$scope.ToAddress = Wallet.ToAddress(items.tx.outputs[0].scripthash);
+	
+	var valueStr = ab2hexstring(reverseArray(items.tx.outputs[0].value));
+	$scope.Value = parseInt( valueStr, 16 ) / 100000000;
+	$scope.AssetID = ab2hexstring(reverseArray(items.tx.outputs[0].assetid));
+	$scope.AssetName = "NULL";
+	for ( i=0; i<$scope.coins.length; i++ ) {
+		if ( $scope.coins[i].assetid == $scope.AssetID ) {
+			$scope.AssetName = $scope.coins[i].name;
+		}
+	}
+
+	// ToAddress Verify failed.
+	if ( items.toAddress != $scope.ToAddress ) {
+		console.log( "ToAddress verify failed." );
+		$scope.txModify = true;
+	}
+
+	// Amount Verify failed.
+	if ( items.amount != $scope.Value ) {
+		console.log( "Amount verify failed." );
+		$scope.txModify = true;
+	} 
+
+	// FromAddress Verify failed.
+	if ( items.tx.outputs.length == 2 ) {
+		if ( Wallet.ToAddress(items.tx.outputs[1].scripthash) != $scope.FromAddress ) {
+			console.log( "FromAddress verify failed." );
+			$scope.txModify = true;
+		} 
+	}
+
+	// ok click
+	$scope.ok = function() {
+		if ( !$scope.txModify ) {
+			if ( $scope.walletType=='externalsignature' ) {
+				$scope.MakeTxAndSend( items.txData );
+			} else {
+				$scope.SignTxAndSend( items.txData );
+			}
+		}
+		$modalInstance.close();
+	};
+
+	// cancel click
+	$scope.cancel = function() {
+		$modalInstance.dismiss('cancel');
+	}
 });
 
 app.controller("SignatureDataCtrl", function($scope,$sce) {
@@ -251,7 +306,7 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
     };
 
     $scope.nextstep = function () {
-        $('#mainTab a[href="#makeTransaction"]').tab('show');
+        $('#mainTab a[href="#sendTransaction"]').tab('show');
     };
 
 	$scope.generateWalletFileFromRandomPrivateKey = function () {
@@ -322,7 +377,7 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
 
 });
 
-app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval) {
+app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval,$modal) {
 	$scope.wallet = null;
     $scope.walletType = "fileupload";
 	$scope.filePassword = "";
@@ -480,6 +535,53 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval)
         	//{name:'Register Asset',id:'64'},
         ];
 
+	};
+
+	// modal
+	$scope.openModal = function() {
+
+		var txData;
+		var tx;
+		if ( $scope.txType == '128' ) {
+			if ( $scope.walletType == 'externalsignature' ) {
+				//console.log( "externalsignature" );
+				txData = $scope.txUnsignedData;
+			} else {
+				//console.log( "normal" );
+				txData = $scope.transferTransactionUnsigned();
+			}
+			if ( txData == false ) return;
+
+			tx = $scope.getTransferTxData( txData );
+		} else {
+			return;
+		}
+
+		var modalInstance = $modal.open({
+			templateUrl : 'myModalContent.html',
+			scope : $scope,
+			controller : 'ModalInstanceCtrl', // specify controller for modal
+			resolve : {
+				items : function() {
+					return {
+						'txData' : txData,
+						'tx' : tx,
+						'toAddress' : $scope.Transaction.ToAddress,
+						'amount' : $scope.Transaction.Amount,
+						'fromAddress' : $scope.accounts[$scope.accountSelectIndex].programHash,
+					}
+				}
+			}
+		});
+		modalInstance.opened.then(function() {// 模态窗口打开之后执行的函数  
+    		//console.log('modal is opened');  
+        });
+		modalInstance.result.then(function(result) {  
+        	//console.log(result);  
+        }, function(reason) {  
+        	//console.log(reason);// 点击空白区域，总会输出backdrop  
+            //console.log('Modal dismissed at: ' + new Date());  
+    	});
 	};
 
 	$scope.changeLangSelectIndex = function($index) {
@@ -661,8 +763,8 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval)
 			}).then(function (res) {
 				if ( res.status == 200 ) {
 					if ( res.data.result > 0 ) {
-						console.log("Node Height:", res.data.result);
-						$scope.notifier.info($translate.instant('NOTIFIER_SUCCESS_CONNECTED_TO_NODE') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostName + "</b>, " + $translate.instant('NOTIFIER_PROVIDED_BY') + $scope.hostInfo[$scope.hostSelectIndex].hostProvider + ".");
+						//console.log("Node Height:", res.data.result);
+						$scope.notifier.info($translate.instant('NOTIFIER_SUCCESS_CONNECTED_TO_NODE') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostName + "</b>, " + $translate.instant('NOTIFIER_PROVIDED_BY') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostProvider + "</b>, " + $translate.instant('NOTIFIER_NODE_HEIGHT') + " <b>" + res.data.result + "</b>.");
 					} else {
 						$scope.notifier.danger($translate.instant('NOTIFIER_CONNECTED_TO_NODE') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostName + "</b> " + $translate.instant('NOTIFIER_FAILURE'));
 					}
@@ -699,10 +801,10 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval)
 		    }).catch(err => console.log(err));
 	}
 
-	$scope.MakeTxAndSend = function() {
-		if ( $scope.txUnsignedData.length > 0 && $scope.txSignatureData.length == 128 ) {
+	$scope.MakeTxAndSend = function( $txUnsignedData ) {
+		if ( $txUnsignedData.length > 0 && $scope.txSignatureData.length == 128 ) {
 			var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
-			var txRawData = Wallet.AddContract( $scope.txUnsignedData, $scope.txSignatureData, publicKeyEncoded );
+			var txRawData = Wallet.AddContract( $txUnsignedData, $scope.txSignatureData, publicKeyEncoded );
 
 			$scope.sendTransactionData( txRawData );
 		} else {
@@ -793,6 +895,14 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval)
 			return false;
 		}
 
+		if ( $scope.Transaction.Amount <= 0 ) {
+			$scope.notifier.warning($translate.instant('NOTIFIER_AMOUNT_MUST_GREATER_ZERO'));
+			return false;
+		}
+
+		//console.log( $scope.coinSelectIndex );
+		//console.log( $scope.coins[$scope.coinSelectIndex] );
+		//console.log( $scope.Transaction.Amount );
 		if ( parseFloat($scope.coins[$scope.coinSelectIndex].balance) < parseFloat($scope.Transaction.Amount) ) {
 			$scope.notifier.danger($translate.instant('NOTIFIER_NOT_ENOUGH_VALUE') + ", " + $translate.instant('ASSET') + ": " + $scope.coins[$scope.coinSelectIndex].name + ", " + $translate.instant('BALANCE') + ": <b>" + $scope.coins[$scope.coinSelectIndex].balance + "</b>, " + $translate.instant('NOTIFIER_SEND_AMOUNT') + ": <b>" + $scope.Transaction.Amount + "</b>" );
 			return false;
@@ -802,10 +912,11 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval)
 		var txData = Wallet.TransferTransaction($scope.coins[$scope.coinSelectIndex],publicKeyEncoded,$scope.Transaction.ToAddress,$scope.Transaction.Amount);
 		if ( txData == -1 ) {
 			$scope.notifier.danger($translate.instant('NOTIFIER_ADDRESS_VERIFY_FAILED'));
-			return;
+			return false;
 		}
 
 		$scope.txUnsignedData = txData;
+		return txData;
 	}
 
 	$scope.transferTransaction = function () {
@@ -813,6 +924,11 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval)
 		var r = $scope.Transaction.Amount.match(reg);
 		if ( r == null ) {
 			$scope.notifier.warning($translate.instant('NOTIFIER_AMOUNT_FORMAT_CHECK_FAILED'));
+			return false;
+		}
+
+		if ( $scope.Transaction.Amount <= 0 ) {
+			$scope.notifier.warning($translate.instant('NOTIFIER_AMOUNT_MUST_GREATER_ZERO'));
 			return false;
 		}
 
@@ -834,7 +950,66 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval)
 
 		$scope.sendTransactionData( txRawData );
 	};
+
+	$scope.SignTxAndSend = function( $txData ) {
+		var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
+		var privateKey = $scope.accounts[$scope.accountSelectIndex].privatekey;
+		var sign = Wallet.signatureData( $txData, privateKey );
+		var txRawData = Wallet.AddContract( $txData, sign, publicKeyEncoded );
+
+		$scope.sendTransactionData( txRawData );
+	};
+
+	$scope.getTransferTxData = function( $txData ) {
+		var ba = new Buffer( $txData, "hex" );
+		var tx = new Transaction();
+		
+		// Transfer Type
+		if ( ba[0] != 0x80 ) return;
+		tx.type = ba[0];
+
+		// Version
+		tx.version = ba[1];
+
+		// Attributes
+		var k = 2;
+		var len = ba[k];
+		for ( i=0; i<len; i++ ) {
+			k = k + 1;
+		}
+
+		// Inputs 
+		k = k + 1;
+		len = ba[k];
+		for ( i=0; i<len; i++ ) {
+			tx.inputs.push( { txid:ba.slice( k+1, k+33 ), index:ba.slice( k+33, k+35 ) } );
+			//console.log( "txid:", tx.inputs[i].txid );
+			//console.log( "index:", tx.inputs[i].index );
+			k = k + 34;
+		}
+
+		// Outputs 
+		k = k + 1;
+		len = ba[k];
+		for ( i=0; i<len; i++ ) {
+			tx.outputs.push( { assetid:ba.slice( k+1, k+33 ), value:ba.slice( k+33, k+41 ), scripthash:ba.slice( k+41, k+61 ) } );
+			//console.log( "outputs.assetid:", tx.outputs[i].assetid );
+			//console.log( "outputs.value:", tx.outputs[i].value );
+			//console.log( "outputs.scripthash:", tx.outputs[i].scripthash );
+			k = k + 60;
+		}
+
+		return tx;
+	};
 });
+
+var Transaction = function Transaction() {
+	this.type = 0;
+	this.version = 0;
+	this.attributes = "";
+	this.inputs = [];
+	this.outputs = [];
+};
 
 var Notifier = {
 			show 	: false,

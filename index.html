@@ -7,24 +7,26 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link rel="apple-touch-icon" href="apple-touch-icon.png">
-        <!-- Place favicon.ico in the root directory -->
+        <link rel="apple-touch-icon" href="logo.png">
+		<link rel="icon" href="favicon.ico" type="image/x-icon" />
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 
 		<!-- CSS -->
 		<link rel="stylesheet" href="css/bootstrap.min.css">
 		<link rel="stylesheet" href="css/wallet.css">
 		
 		<!-- Javascript -->
-		<script src="js/vendor/modernizr-2.8.3.min.js"></script>
-        <script src="js/vendor/jquery-1.12.0.min.js"></script>
+		<script src="https://cdn.bootcss.com/modernizr/2.8.3/modernizr.min.js"></script>
+        <script src="https://cdn.bootcss.com/jquery/1.12.0/jquery.min.js"></script>
 		<script>if (typeof module === 'object') {window.jQuery = window.$ = module.exports;};</script>
 		<script src="js/vendor/plugins.js"></script>
 		
-		<script src="js/vendor/angular.min.js"></script>
-		<script src="js/vendor/angular-translate.min.js"></script>
-		<script src="js/vendor/loader-static-files.js"></script>
-		<script src="js/vendor/bootstrap.min.js"></script>
-		<script src="js/vendor/sql.js"></script>
+		<script src="https://cdn.bootcss.com/angular.js/1.6.4/angular.min.js"></script>
+		<script src="https://cdn.bootcss.com/angular-translate/2.15.1/angular-translate.min.js"></script>
+		<script src="https://cdn.bootcss.com/angular-translate/2.15.1/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js"></script>
+		<script src="http://cdn.bootcss.com/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.js"></script>
+		<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<script src="https://cdn.bootcss.com/sql.js/0.4.0/js/sql.js"></script>
 		
 		<script src="js/vendor/CryptoJS/sha256.js"></script>
 		<script src="js/vendor/CryptoJS/ripemd160.js"></script>
@@ -118,8 +120,8 @@
 		  <!-- main -->
 		  <div class="page-header">
 				<ul class="nav nav-tabs" id="mainTab">
-					<li role="presentation"><a href="#generateWallet" data-toggle="tab" translate="GENERATE_WALLET">Generate Wallet</a></li>
-					<li role="presentation" class="active"><a href="#makeTransaction" data-toggle="tab" translate="MAKE_TRANSACTION">Make Transaction</a></li>
+					<li role="presentation" class="active"><a href="#generateWallet" data-toggle="tab" translate="GENERATE_WALLET">Generate Wallet</a></li>
+					<li role="presentation"><a href="#sendTransaction" data-toggle="tab" translate="SEND_TRANSACTION">Send Transaction</a></li>
 					<li role="presentation"><a href="#signatureData" data-toggle="tab" translate="SIGNATURE_DATA">Signature Data</a></li>
 					<!--<li role="presentation"><a href="#verifySignatureData" data-toggle="tab">Verify Signature Data</a></li>-->
 					<!--<li role="presentation"><a href="#hashCalc" data-toggle="tab">Hash Calc</a></li>-->
@@ -130,7 +132,7 @@
 		  <div class="tab-content">
 		  
 			  <!-- #generateWallet tab-->
-			  <div class="tab-pane fade" id="generateWallet" ng-controller="GenerateWalletCtrl">
+			  <div class="tab-pane fade active in" id="generateWallet" ng-controller="GenerateWalletCtrl">
 			  
 				<div class="row">
 					<div class="col-lg-8 col-md-8 col-sm-6">
@@ -254,12 +256,12 @@
 
 			  </div>
 			
-			  <!-- #makeTransaction tab-->
-			  <div class="tab-pane fade active in" id="makeTransaction">
+			  <!-- #sendTransaction tab-->
+			  <div class="tab-pane fade" id="sendTransaction">
 			  
 				<div class="row">
 					<div class="col-lg-8 col-md-8 col-sm-6">
-						<h1 translate="MAKE_TRANSACTION">Make Transaction</h1>
+						<h1 translate="SEND_TRANSACTION">Send Transaction</h1>
 					</div>
 				</div>
 				
@@ -467,7 +469,7 @@
 								<hr />
 								
 								<div class="form-group">
-									<button class="btn btn-primary btn-block" ng-click="MakeTxAndSend()" translate="MT_SEND_TRANSACTION">Send Transaction</button>
+									<button class="btn btn-primary btn-block" ng-click="MakeTxAndSend($parent.$parent.txUnsignedData)" translate="MT_SEND_TRANSACTION">Send Transaction</button>
 								</div>
 								
 							</div>
@@ -503,7 +505,8 @@
 							<div ng-if="walletType!='externalsignature'">
 								<div class="form-group">
 									<!--<button class="btn btn-primary btn-block" ng-click="sendTransaction()" >Send Transaction</button>-->
-									<button class="btn btn-primary btn-block" data-toggle="modal" data-target="#confirmTxModal" translate="BTN_TRANSFER_TRANSACTION">Transfer Transaction</button>
+									<button class="btn btn-primary btn-block" ng-click="openModal()" translate="BTN_TRANSFER_TRANSACTION">Send Transaction</button>
+									<!--<button class="btn btn-primary btn-block" data-toggle="modal" data-target="#confirmTxModal" translate="BTN_TRANSFER_TRANSACTION">Transfer Transaction</button>-->
 								</div>
 							</div>
 							
@@ -528,7 +531,8 @@
 								<hr />
 								
 								<div class="form-group">
-									<button class="btn btn-primary btn-block" ng-click="MakeTxAndSend()" translate="MT_SEND_TRANSACTION">Send Transaction</button>
+									<!--<button class="btn btn-primary btn-block" ng-click="MakeTxAndSend()" translate="MT_SEND_TRANSACTION">Send Transaction</button>-->
+									<button class="btn btn-primary btn-block" ng-click="openModal()" translate="MT_SEND_TRANSACTION">Send Transaction</button>
 								</div>
 								
 							</div>
@@ -574,7 +578,7 @@
 								<hr />
 								
 								<div class="form-group">
-									<button class="btn btn-primary btn-block" ng-click="MakeTxAndSend()" translate="MT_SEND_TRANSACTION">Send Transaction</button>
+									<button class="btn btn-primary btn-block" ng-click="MakeTxAndSend($parent.$parent.txUnsignedData)" translate="MT_SEND_TRANSACTION">Send Transaction</button>
 								</div>
 								
 							</div>
@@ -713,19 +717,24 @@
 		</div>
 		
 		<!-- confirm Transaction Modal -->
+		<!--
 		<div class="modal fade" id="confirmTxModal" tabindex="-1" role="dialog" aria-labelledby="confirmTxModal" aria-hidden="true">
 		  <div class="modal-dialog">
-			<div class="modal-content">
-			  
+			<div class="modal-content"> -->
+			<script type="text/ng-template" id="myModalContent.html">
+			
 			  <div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">&times;</button>
 				<h2 class="modal-title modal-title-warning" translate="WARNING">Warning!</h2>
 			  </div>
 			  
 			  <div class="modal-body">
-				<p>{{ 'MT_TO_ADDRESS' | translate }}: <b>{{Transaction.ToAddress}}</b></p>
-				<p>{{ 'ASSET' | translate }}: <b>{{Transaction.Amount}} {{coins[coinSelectIndex].name}}</b></p>
-				<p>{{ 'MT_FROM_ADDRESS' | translate }}: {{accounts[accountSelectIndex].address}}</p>
+				<p>{{ 'MT_TO_ADDRESS' | translate }}: <b>{{ToAddress}}</b></p>
+				<p>{{ 'AMOUNT' | translate }}: <b>{{Value}}</b></p>
+				<p>{{ 'ASSETNAME' | translate }}: <b>{{AssetName}}</b></p>
+				<p>{{ 'ASSETID' | translate }}: <b>{{AssetID}}</b></p>
+				<p>{{ 'MT_FROM_ADDRESS' | translate }}: <b>{{FromAddress}}</b></p>
+				<p ng-if="txModify" class="text-danger">{{ 'MT_MODAL_DANGER_1' | translate }}</p>
 				
 				<hr />
 				<p>{{ 'MT_YOU_ARE_CONNECTED_TO_NODE' | translate }} <b>{{hostInfo[hostSelectIndex].hostName}}</b>, {{ 'MT_PROVIDED_BY' | translate }} <b>{{hostInfo[hostSelectIndex].hostProvider}}<b> </p>
@@ -733,13 +742,16 @@
 			  </div>
 			  
 			  <div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">{{ 'BTN_NO_LET_ME_THINK' | translate }}</button>
-				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="transferTransaction()">{{ 'BTN_YES_SURE' | translate }}</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">{{ 'BTN_NO_LET_ME_THINK' | translate }}</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="ok()" ng-if="txModify" disabled="disabled">{{ 'BTN_YES_SURE' | translate }}</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="ok()" ng-if="!txModify">{{ 'BTN_YES_SURE' | translate }}</button>
 			  </div>
 			  
+			</script>
+			<!--  
 			</div>
 		  </div>
-		</div>
+		</div>-->
 
 		<!-- alert -->
 		<div class="navbar-fixed-bottom alert popup {{notifier.class}} animated-show-hide" ng-show="notifier.show" role="alert" aria-live="assertive">
@@ -760,6 +772,16 @@
   
 			</div>
 		</footer>
+		
+		<script>
+			var _hmt = _hmt || [];
+			(function() {
+			  var hm = document.createElement("script");
+			  hm.src = "https://hm.baidu.com/hm.js?dc46e6b584efcf293a6a9805b90b3f35";
+			  var s = document.getElementsByTagName("script")[0]; 
+			  s.parentNode.insertBefore(hm, s);
+			})();
+		</script>
 
     </body>
 	
