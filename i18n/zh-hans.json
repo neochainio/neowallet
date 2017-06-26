@@ -1,6 +1,6 @@
 ﻿{
 "GENERATE_WALLET":"生成钱包",
-"MAKE_TRANSACTION":"构造交易",
+"SEND_TRANSACTION":"发送交易",
 "SIGNATURE_DATA":"数据签名",
 "TOOLS":"工具",
 
@@ -40,9 +40,11 @@
 "NOTIFIER_ISSUE_AMOUNT_CHECK_FAILED":"发行资产数量检查失败。",
 "NOTIFIER_REGISTER_AMOUNT_CHECK_FAILED":"注册资产数量检查失败。",
 "NOTIFIER_AMOUNT_FORMAT_CHECK_FAILED":"数额格式检查失败。",
+"NOTIFIER_AMOUNT_MUST_GREATER_ZERO":"数额必须大于零。",
 "NOTIFIER_NOT_ENOUGH_VALUE":"没有足够的余额进行转账",
 "NOTIFIER_SEND_AMOUNT":"发送数额",
 "NOTIFIER_ADDRESS_VERIFY_FAILED":"地址验证失败。",
+"NOTIFIER_NODE_HEIGHT":"节点高度：",
 
 "GW_SAVE_WALLET_FILE":"1、保存好钱包文件（已使用您提供的密码加密）。",
 "GW_YOUR_PRIVATE_KEY":"2、这是您的私钥明文，请妥善保存好。",
@@ -72,9 +74,9 @@
 "BTN_ISSUE_TRANSACTION":"发行交易",
 "BTN_GET_ISSUE_TRANSACTION":"获取发行交易数据",
 
-"MT_TO_ADDRESS":"发送到地址",
+"MT_TO_ADDRESS":"发送到对方地址",
 "MT_AMOUNT_TO_SEND":"发送数量",
-"MT_FROM_ADDRESS":"发送自地址",
+"MT_FROM_ADDRESS":"发送自我的地址",
 "BTN_TRANSFER_TRANSACTION":"转账交易",
 "BTN_GET_TRANSFER_TRANSACTION":"获取转账交易数据",
 
@@ -88,6 +90,7 @@
 "MT_ARE_YOU_SURE_TO_SEND_TRANSACTION":"您是否确认要发送这笔交易？",
 "BTN_NO_LET_ME_THINK":"不，让我再考虑一下",
 "BTN_YES_SURE":"是的，我确认发送这笔交易",
+"MT_MODAL_DANGER_1":"严重错误：交易验证信息与填写信息不一致，无法发送交易！",
 
 "BTN_GENERATE_PRIVATEKEY":"生成私钥",
 "BTN_GENERATE_PUBLICKEY":"生成公钥",
@@ -96,8 +99,11 @@
 "BTN_GENERATE_SCRIPTHASH":"生成脚本哈希",
 "BTN_GENERATE_ADDRESS":"生成地址",
 
+"WARNING":"警告",
 "BALANCE":"余额",
 "ASSET":"资产",
+"ASSETNAME":"资产名称",
+"ASSETID":"资产编号",
 "AMOUNT":"数量",
 "WIF_KEY":"WIF",
 "PRIVATE_KEY":"私钥",

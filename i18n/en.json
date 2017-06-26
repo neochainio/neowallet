@@ -1,6 +1,6 @@
 {
 "GENERATE_WALLET":"Generate Wallet",
-"MAKE_TRANSACTION":"Make Transaction",
+"SEND_TRANSACTION":"Send Transaction",
 "SIGNATURE_DATA":"Signature Data",
 "TOOLS":"Tools",
 
@@ -40,9 +40,11 @@
 "NOTIFIER_ISSUE_AMOUNT_CHECK_FAILED":"Issue Amount check failed.",
 "NOTIFIER_REGISTER_AMOUNT_CHECK_FAILED":"Register Amount check failed.",
 "NOTIFIER_AMOUNT_FORMAT_CHECK_FAILED":"Amount format check failed.",
+"NOTIFIER_AMOUNT_MUST_GREATER_ZERO":"The Amount must be greater than zero.",
 "NOTIFIER_NOT_ENOUGH_VALUE":"Not enough value to send",
 "NOTIFIER_SEND_AMOUNT":"Send Amount",
 "NOTIFIER_ADDRESS_VERIFY_FAILED":"Address verify failed.",
+"NOTIFIER_NODE_HEIGHT":"Node height:",
 
 "GW_SAVE_WALLET_FILE":"1.Save your Wallet File encrypted by your password.",
 "GW_YOUR_PRIVATE_KEY":"2.This is your Private Key, Please keep it safe.",
@@ -72,9 +74,9 @@
 "BTN_ISSUE_TRANSACTION":"Issue Transaction",
 "BTN_GET_ISSUE_TRANSACTION":"Get Issue Transaction",
 
-"MT_TO_ADDRESS":"To Address",
+"MT_TO_ADDRESS":"To Other Address",
 "MT_AMOUNT_TO_SEND":"Amount to Send",
-"MT_FROM_ADDRESS":"From Address",
+"MT_FROM_ADDRESS":"From My Address",
 "BTN_TRANSFER_TRANSACTION":"Transfer Transaction",
 "BTN_GET_TRANSFER_TRANSACTION":"Get Transfer Transaction",
 
@@ -88,6 +90,7 @@
 "MT_ARE_YOU_SURE_TO_SEND_TRANSACTION":"Are you sure to send this transaction?",
 "BTN_NO_LET_ME_THINK":"No, Let me think about it.",
 "BTN_YES_SURE":"Yes,I am sure! Send transaction.",
+"MT_MODAL_DANGER_1":"SERIOUS ERROR：Transaction Data is different with the fill, you can't send this transaction!",
 
 "BTN_GENERATE_PRIVATEKEY":"Generate PrivateKey",
 "BTN_GENERATE_PUBLICKEY":"Generate PublicKey",
@@ -96,8 +99,11 @@
 "BTN_GENERATE_SCRIPTHASH":"Generate ScriptHash",
 "BTN_GENERATE_ADDRESS":"Generate Address",
 
+"WARNING":"WARNING",
 "BALANCE":"Balance",
 "ASSET":"Asset",
+"ASSETNAME":"AssetName",
+"ASSETID":"AssetID",
 "AMOUNT":"Amount",
 "WIF_KEY":"WIF Key",
 "PRIVATE_KEY":"Private Key",
