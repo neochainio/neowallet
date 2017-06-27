@@ -1,788 +1,911 @@
 <!doctype html>
 <html class="no-js" lang="en" ng-app="neow">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>NEO Wallet</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>NEO Wallet</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link rel="apple-touch-icon" href="logo.png">
-		<link rel="icon" href="favicon.ico" type="image/x-icon" />
-		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="logo.png">
+    <link rel="icon" href="favicon.ico" type="image/x-icon"/>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
 
-		<!-- CSS -->
-		<link rel="stylesheet" href="css/bootstrap.min.css">
-		<link rel="stylesheet" href="css/wallet.css">
-		
-		<!-- Javascript -->
-		<script src="https://cdn.bootcss.com/modernizr/2.8.3/modernizr.min.js"></script>
-        <script src="https://cdn.bootcss.com/jquery/1.12.0/jquery.min.js"></script>
-		<script>if (typeof module === 'object') {window.jQuery = window.$ = module.exports;};</script>
-		<script src="js/vendor/plugins.js"></script>
-		
-		<script src="https://cdn.bootcss.com/angular.js/1.6.4/angular.min.js"></script>
-		<script src="https://cdn.bootcss.com/angular-translate/2.15.1/angular-translate.min.js"></script>
-		<script src="https://cdn.bootcss.com/angular-translate/2.15.1/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js"></script>
-		<script src="http://cdn.bootcss.com/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.js"></script>
-		<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-		<script src="https://cdn.bootcss.com/sql.js/0.4.0/js/sql.js"></script>
-		
-		<script src="js/vendor/CryptoJS/sha256.js"></script>
-		<script src="js/vendor/CryptoJS/ripemd160.js"></script>
-		<script src="js/vendor/CryptoJS/aes.js"></script>
-		<script src="js/vendor/CryptoJS/pad-nopadding.js"></script>
-		
-		<!--<script src="js/vendor/sm.js"></script>-->
-		<script src="js/vendor/ecdsa_bundle.js"></script>
-		<script src="js/vendor/secp256k1_bundle.js"></script>
-		
-		<script src="js/app.js"></script>
-        <script src="js/wallet.js"></script>
-		
-		<script language="javascript">
-			function setTabFromURL() {
-				var url = document.location.toString();
-				if (url.match('#')) {
-					$('#mainTab a[href="#'+url.split('#')[1]+'"]').tab('show');
-				}
-			}
-			
-			window.onload = setTabFromURL;
-		</script>
-		
-		<script language="javascript">
-			function ab2hs(arr) {
-				var result = "";
-				for (i=0; i<arr.length; i++) {
-					var str = arr[i].toString(16);
-					str = str.length == 0 ? "00" :
-						  str.length == 1 ? "0" + str : 
-						  str;
-					result += str;
-				}
-				return result;
-			}
-		</script>
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/wallet.css">
 
-    </head>
-	
-    <body ng-controller="NeoWalletCtrl" ng-init="init()">
-        <!--[if lt IE 8]>
-            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
-		
-		<header>
-		
-			<div class="navbar navbar-default navbar-fixed-top">
-			  <div class="container">
-				<div class="navbar-header">
-				  <a href="#" class="navbar-brand">NEO Wallet</a>
-				  <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				  </button>
-				</div>
-				<div class="navbar-collapse collapse" id="navbar-main">
-				  <ul class="nav navbar-nav">
-					<li></li>
-				  </ul>
+    <!-- Javascript -->
+    <script src="https://cdn.bootcss.com/modernizr/2.8.3/modernizr.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/1.12.0/jquery.min.js"></script>
+    <script>if (typeof module === 'object') {window.jQuery = window.$ = module.exports}
+    </script>
+    <script src="js/vendor/plugins.js"></script>
 
-				  <ul class="nav navbar-nav navbar-right">
-					<li class="dropdown">
-					  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{hostInfo[hostSelectIndex].hostName}} <span class="caret"></span></a>
-					  <ul class="dropdown-menu" role="menu">
-						<li ng-repeat="host in hostInfo"><a href="#" ng-click="changehostSelectIndex($index)" value="{{host.hostName}}">{{host.hostName}}</a></li>
-					  </ul>
-					</li>
-				  </ul>
-				  
-				  <ul class="nav navbar-nav navbar-right">
-					<li class="dropdown">
-					  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{langs[langSelectIndex].name}} <span class="caret"></span></a>
-					  <ul class="dropdown-menu" role="menu">
-						<li ng-repeat="lang in langs"><a href="#" ng-click="changeLangSelectIndex($index)">{{lang.name}}</a></li>
-					  </ul>
-					</li>
-				  </ul>
+    <script src="https://cdn.bootcss.com/angular.js/1.6.4/angular.min.js"></script>
+    <script src="https://cdn.bootcss.com/angular-translate/2.15.1/angular-translate.min.js"></script>
+    <script
+        src="https://cdn.bootcss.com/angular-translate/2.15.1/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js"></script>
+    <script src="http://cdn.bootcss.com/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/sql.js/0.4.0/js/sql.js"></script>
 
-				</div>
-			  </div>
-			</div>
-		
-		</header>
-		
-		<div class="container main">
+    <script src="js/vendor/CryptoJS/sha256.js"></script>
+    <script src="js/vendor/CryptoJS/ripemd160.js"></script>
+    <script src="js/vendor/CryptoJS/aes.js"></script>
+    <script src="js/vendor/CryptoJS/pad-nopadding.js"></script>
 
-		  <br/><br/>
-		  
-		  <!-- main -->
-		  <div class="page-header">
-				<ul class="nav nav-tabs" id="mainTab">
-					<li role="presentation" class="active"><a href="#generateWallet" data-toggle="tab" translate="GENERATE_WALLET">Generate Wallet</a></li>
-					<li role="presentation"><a href="#sendTransaction" data-toggle="tab" translate="SEND_TRANSACTION">Send Transaction</a></li>
-					<li role="presentation"><a href="#signatureData" data-toggle="tab" translate="SIGNATURE_DATA">Signature Data</a></li>
-					<!--<li role="presentation"><a href="#verifySignatureData" data-toggle="tab">Verify Signature Data</a></li>-->
-					<!--<li role="presentation"><a href="#hashCalc" data-toggle="tab">Hash Calc</a></li>-->
-					<li role="presentation"><a href="#tools" data-toggle="tab" translate="TOOLS">Tools</a></li>
-				</ul>
-		  </div>
-		  
-		  <div class="tab-content">
-		  
-			  <!-- #generateWallet tab-->
-			  <div class="tab-pane fade active in" id="generateWallet" ng-controller="GenerateWalletCtrl">
-			  
-				<div class="row">
-					<div class="col-lg-8 col-md-8 col-sm-6">
-						<h1 translate="GENERATE_WALLET">Generate Wallet</h1>
-					</div>
-				</div>
-				
-				<br />
-				
-				<div class="row" ng-show="showCreateWallet">
-				
-					  <!-- Column 1 - Select Type of Create -->
-					  <div class="form-group col-lg-4 col-md-4 col-sm-6">
-						<h4 translate="GW_INFO">What type would you like to create your wallet?</h4>
-						<div class="radio">
-						 <label>
-							<input type="radio" ng-model="createType" value="fromRandomPrivateKey" name="radioFromRandomPrivateKey" id="radioFromRandomPrivateKey">
-							<span translate="NEW_WALLET">New Wallet</span>
-						 </label>
-						</div>
-						
-						<div class="radio">
-						  <label>
-							<input type="radio" ng-model="createType" value="fromPrivateKey" name="radioFromPrivateKey" id="radioFromPrivateKey">
-							<span translate="FROM_PRIVATE_KEY">From Private Key</span>
-						 </label>
-						</div>
-						
-						<div class="radio">
-						  <label>
-							<input type="radio" ng-model="createType" value="fromWIFKey" name="radioFromWIFKey" id="radioFromWIFKey">
-							<span translate="FROM_WIF_KEY">From WIF Key</span>
-						 </label>
-						</div>
-					  </div>
-					  <!-- Column 1 - Select Type of Key -->
-				  
-					<div class="col-lg-8 col-md-8 col-sm-6">
-					
-						<!-- password confirm -->
-						<div class="form-group {{styleStringOfCreatePassword1}}">
-							<label class="control-label" translate="ENTER_PWD_1">Enter a strong password (at least 8 characters):</label><br />
-							<div class="input-group">
-								<input ng-if="!isDisplayPassword" class="form-control" ng-change="changeCreatePassword1()" ng-model="$parent.createPassword1" placeholder="{{ 'PASSWORD' | translate }}" aria-label="password" type="text" onfocus="this.type='password'" autocomplete="off" />
-								<input ng-if="isDisplayPassword" type="text" class="form-control" ng-change="changeCreatePassword1()" ng-model="$parent.createPassword1" placeholder="{{ 'PASSWORD' | translate }}" aria-label="password" />
-								<span class="input-group-btn" style="font-size: 15px" ng-if="!isDisplayPassword">
-									<button type="button" class="btn btn-default" ng-click="changeDisplayPassword()">&nbsp&nbsp&nbsp&nbsp<span class="glyphicon glyphicon-eye-open"></span></button>
+    <!--<script src="js/vendor/sm.js"></script>-->
+    <script src="js/vendor/ecdsa_bundle.js"></script>
+    <script src="js/vendor/secp256k1_bundle.js"></script>
+
+    <script src="js/app.js"></script>
+    <script src="js/wallet.js"></script>
+
+    <script language="javascript">
+      function setTabFromURL() {
+        var url = document.location.toString()
+        if (url.match('#')) {
+          $('#mainTab a[href="#' + url.split('#')[1] + '"]').tab('show')
+        }
+      }
+
+      window.onload = setTabFromURL
+    </script>
+
+    <script language="javascript">
+      function ab2hs(arr) {
+        var result = ''
+        for (i = 0; i < arr.length; i++) {
+          var str = arr[i].toString(16)
+          str = str.length == 0 ? '00' : str.length == 1 ? '0' + str : str
+          result += str
+        }
+        return result
+      }
+    </script>
+
+  </head>
+
+  <body ng-controller="NeoWalletCtrl" ng-init="init()">
+    <!--[if lt IE 8]>
+    <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a
+        href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <header>
+
+      <div class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+          <div class="navbar-header">
+            <a href="#" class="navbar-brand">NEO Wallet</a>
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+          </div>
+          <div class="navbar-collapse collapse" id="navbar-main">
+            <ul class="nav navbar-nav">
+              <li></li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{hostInfo[hostSelectIndex].hostName}}
+                  <span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu">
+                  <li ng-repeat="host in hostInfo"><a href="#" ng-click="changehostSelectIndex($index)"
+                                                      value="{{host.hostName}}">{{host.hostName}}</a></li>
+                </ul>
+              </li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{langs[langSelectIndex].name}}
+                  <span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu">
+                  <li ng-repeat="lang in langs"><a href="#" ng-click="changeLangSelectIndex($index)">{{lang.name}}</a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+
+          </div>
+        </div>
+      </div>
+
+    </header>
+
+    <div class="container main">
+
+      <br/><br/>
+
+      <!-- main -->
+      <div class="page-header">
+        <ul class="nav nav-tabs" id="mainTab">
+          <li role="presentation" class="active"><a href="#generateWallet" data-toggle="tab"
+                                                    translate="GENERATE_WALLET">Generate Wallet</a></li>
+          <li role="presentation"><a href="#sendTransaction" data-toggle="tab" translate="SEND_TRANSACTION">Send
+                                                                                                            Transaction</a>
+          </li>
+          <li role="presentation"><a href="#signatureData" data-toggle="tab" translate="SIGNATURE_DATA">Signature
+                                                                                                        Data</a></li>
+          <!--<li role="presentation"><a href="#verifySignatureData" data-toggle="tab">Verify Signature Data</a></li>-->
+          <!--<li role="presentation"><a href="#hashCalc" data-toggle="tab">Hash Calc</a></li>-->
+          <li role="presentation"><a href="#tools" data-toggle="tab" translate="TOOLS">Tools</a></li>
+        </ul>
+      </div>
+
+      <div class="tab-content">
+
+        <!-- #generateWallet tab-->
+        <div class="tab-pane fade active in" id="generateWallet" ng-controller="GenerateWalletCtrl">
+
+          <div class="row">
+            <div class="col-lg-8 col-md-8 col-sm-6">
+              <h1 translate="GENERATE_WALLET">Generate Wallet</h1>
+            </div>
+          </div>
+
+          <br/>
+
+          <div class="row" ng-show="showCreateWallet">
+
+            <!-- Column 1 - Select Type of Create -->
+            <div class="form-group col-lg-4 col-md-4 col-sm-6">
+              <h4 translate="GW_INFO">What type would you like to create your wallet?</h4>
+              <div class="radio">
+                <label>
+                  <input type="radio" ng-model="createType" value="fromRandomPrivateKey"
+                         name="radioFromRandomPrivateKey" id="radioFromRandomPrivateKey">
+                  <span translate="NEW_WALLET">New Wallet</span>
+                </label>
+              </div>
+
+              <div class="radio">
+                <label>
+                  <input type="radio" ng-model="createType" value="fromPrivateKey" name="radioFromPrivateKey"
+                         id="radioFromPrivateKey">
+                  <span translate="FROM_PRIVATE_KEY">From Private Key</span>
+                </label>
+              </div>
+
+              <div class="radio">
+                <label>
+                  <input type="radio" ng-model="createType" value="fromWIFKey" name="radioFromWIFKey"
+                         id="radioFromWIFKey">
+                  <span translate="FROM_WIF_KEY">From WIF Key</span>
+                </label>
+              </div>
+            </div>
+            <!-- Column 1 - Select Type of Key -->
+
+            <div class="col-lg-8 col-md-8 col-sm-6">
+
+              <!-- password confirm -->
+              <div class="form-group {{styleStringOfCreatePassword1}}">
+                <label class="control-label" translate="ENTER_PWD_1">Enter a strong password (at least 8
+                                                                     characters):</label><br/>
+                <div class="input-group">
+                  <input ng-if="!isDisplayPassword" class="form-control" ng-change="changeCreatePassword1()"
+                         ng-model="$parent.createPassword1" placeholder="{{ 'PASSWORD' | translate }}"
+                         aria-label="password" type="text" onfocus="this.type='password'" autocomplete="off"/>
+                  <input ng-if="isDisplayPassword" type="text" class="form-control" ng-change="changeCreatePassword1()"
+                         ng-model="$parent.createPassword1" placeholder="{{ 'PASSWORD' | translate }}"
+                         aria-label="password"/>
+                  <span class="input-group-btn" style="font-size: 15px" ng-if="!isDisplayPassword">
+									<button type="button" class="btn btn-default"
+                          ng-click="changeDisplayPassword()">&nbsp&nbsp&nbsp&nbsp<span
+                      class="glyphicon glyphicon-eye-open"></span></button>
 								</span>
-								<span class="input-group-btn" style="font-size: 15px" ng-if="isDisplayPassword">
-									<button type="button" class="btn btn-default" ng-click="changeDisplayPassword()">&nbsp&nbsp&nbsp&nbsp<span class="glyphicon glyphicon-eye-close"></span></button>
+                  <span class="input-group-btn" style="font-size: 15px" ng-if="isDisplayPassword">
+									<button type="button" class="btn btn-default"
+                          ng-click="changeDisplayPassword()">&nbsp&nbsp&nbsp&nbsp<span
+                      class="glyphicon glyphicon-eye-close"></span></button>
 								</span>
-							</div>
-						</div>
-							
-						<div class="form-group {{styleStringOfCreatePassword2}}" ng-if="!isDisplayPassword">
-							<label class="control-label" translate="RE_ENTER_PASSWORD">Re-Enter password:</label>
-							<input class="form-control" ng-change="changeCreatePassword2()" ng-model="$parent.createPassword2" placeholder="{{ 'RE_ENTER_PASSWORD' | translate }}" type="text" onfocus="this.type='password'" autocomplete="off"/>
-						</div>
-					
-						<!-- fromRandomPrivateKey -->
-						<div id="fromRandomPrivateKey" ng-if="createType=='fromRandomPrivateKey'">
-							<br />
-							
-							<div class="form-group" ng-if="showBtnGenerateWallet">
-								<button class="btn btn-primary btn-block" ng-click="generateWalletFileFromRandomPrivateKey()" translate="GENERATE_WALLET">Generate Wallet</button>
-							</div>
-						</div>
-						
-						<!-- fromPrivateKey -->
-						<div id="fromPrivateKey" ng-if="createType=='fromPrivateKey'">
-							<div class="form-group">
-								<label class="control-label" translate="GW_PASTE_YOUR_PRIVATE_KEY">Paste Your Private Key:</label>
-								<input class="form-control" type="text" ng-model="$parent.privateKey" placeholder="" aria-label=""></textarea>
-							</div>
-							
-							<div class="form-group" ng-if="showBtnGenerateWallet">
-								<button class="btn btn-primary btn-block" ng-click="generateWalletFileFromPrivateKey()" translate="GENERATE_WALLET">Generate Wallet</button>
-							</div>
-						</div>
-						
-						<!-- fromWIFKey -->
-						<div id="fromWIFKey" ng-if="createType=='fromWIFKey'">
-							<div class="form-group">
-								<label class="control-label" translate="GW_PASTE_YOUR_WIF_KEY">Paste Your WIF Key:</label>
-								<input class="form-control" type="text" ng-model="$parent.WIFKey" placeholder="" aria-label=""></textarea>
-							</div>
-							
-							<div class="form-group" ng-if="showBtnGenerateWallet">
-								<button class="btn btn-primary btn-block" ng-click="generateWalletFileFromWIFKey()" translate="GENERATE_WALLET">Generate Wallet</button>
-							</div>
-						</div>
-						
-					</div>
-					
-				</div>
-				
-				<div class="row" ng-show="showCreateWalletDownload">
-					<div class="col-lg-12 col-md-12 col-sm-12">
-					
-						<h4 translate="GW_SAVE_WALLET_FILE">1. Save your Wallet File encrypted by your password.</h4>
-						<div class="form-group">
-							<a tabindex="0" role="button" class="btn btn-primary btn-block" href="{{objectURL}}" download="wallet--{{objectName}}.db3" ng-click="downloaded()" translate="DOWNLOAD">Download</a>
-						</div>
-						
-						<br />
-					
-						<h4 translate="GW_YOUR_PRIVATE_KEY">2. Your Private Key, Please keep it safe.</h4>
-						<div class="form-group">
-							<input class="form-control" type="text" ng-model="privateKey" id="privateKey" name="privateKey" readonly="readonly" aria-label="privateKey">
-							<input class="form-control" type="hidden" id="key" name="key" readonly="readonly" aria-label="key">
-						</div>
-						
-						<br />
-						
-						<div class="form-group" ng-if="fileDownloaded">
-							<button class="btn btn-default btn-block" ng-click="nextstep()" translate="GW_NEXT_STEP">Next Step: Make Transaction</button>
-						</div>
-						
-					</div>
-				</div>
+                </div>
+              </div>
 
-			  </div>
-			
-			  <!-- #sendTransaction tab-->
-			  <div class="tab-pane fade" id="sendTransaction">
-			  
-				<div class="row">
-					<div class="col-lg-8 col-md-8 col-sm-6">
-						<h1 translate="SEND_TRANSACTION">Send Transaction</h1>
-					</div>
-				</div>
-				
-				<br />
-			  
-				<div class="row jumbotron" ng-show="showOpenWallet">
-				  <!-- Column 1 - Select Type of Key -->
-				  <div class="form-group col-lg-4 col-md-4 col-sm-6">
-					<h4 translate="MT_INFO">How would you like to access your wallet?</h4>
-					<div class="radio">
-					 <label>
-						<input type="radio" ng-model="walletType" value="fileupload" name="radiofile" id="radiofile">
-						<span translate="KEYSTORE_FILE">Keystore File (DB / DB3)</span>
-					 </label>
-					</div>
-					
-					<div class="radio">
-					  <label>
-						<input type="radio" ng-model="walletType" value="pasteprivkey" name="radioprivkey" id="radioprivkey">
-						<span translate="PRIVATE_KEY">Private Key</span>
-					 </label>
-					</div>
-					
-					<div class="radio">
-					  <label>
-						<input type="radio" ng-model="walletType" value="pastewifkey" name="radiowifkey" id="radiowifkey">
-						<span translate="WIF_KEY">WIF Key</span>
-					 </label>
-					</div>
-					
-					<div class="radio">
-					  <label>
-						<input type="radio" ng-model="walletType" value="externalsignature" name="radioextsig" id="radioextsig">
-						<span translate="EXTERNAL_SIGNATURE">External Signature</span>
-					 </label>
-					</div>
-				  </div>
-				  <!-- Column 1 - Select Type of Key -->
-				  
-				  <div class="col-lg-6 col-md-6 col-sm-6">
-				  
-					<!-- fileupload -->
-					<div id="fileupload" ng-if="walletType=='fileupload'">
-						<h4 translate="SELECT_YOUR_WALLET_FILE">Select Your Wallet File</h4>
-						<input style="display:none;" type="file" on-read-file="showContent($wallet)" id="fselector" />
-						<button class="btn btn-default btn-block" ng-click="openFileDialog()" translate="BTN_SELECT_WALLET_FILE">Select Wallet File...</button >
-						
-						<div ng-if="requirePass" class="form-group has-success">
-							<label class="control-label" translate="MT_YOUR_WALLET_IS_ENCRYPTED">Your wallet is encrypted. Please enter the password:</label>
-							<input class="form-control" ng-change="onFilePassChange()" ng-model="$parent.$parent.filePassword" placeholder="{{ 'PASSWORD' | translate }}" type="text" onfocus="this.type='password'" autocomplete="off"/>
-						</div>
-						
-						<div ng-if="showBtnUnlock">
-							<h4 translate="UNLOCK_YOUR_WALLET">Unlock your wallet</h4>
-							<button class="btn btn-primary btn-block" ng-click="decryptWallet()" translate="BTN_UNLOCK">Unlock</button>
-						</div>
-					</div>
-					
-					<!-- pasteprivkey -->
-					<div id="pasteprivkey" ng-if="walletType=='pasteprivkey'">
-						<h4 translate="MT_PASTE_YOUR_PRIVATE_KEY">Paste Your Private Key</h4>
-						<textarea class="form-control" ng-change="onPrivateKeyChange()" ng-model="$parent.privateKeyData" placeholder="" rows="3" aria-label="privateKeyData"></textarea>
-						
-						<br />
-						
-						<div ng-if="showBtnUnlockPrivateKey">
-							<h4 translate="UNLOCK_YOUR_WALLET">Unlock your Wallet</h4>
-							<button class="btn btn-primary btn-block" ng-click="decryptWallet()" translate="BTN_UNLOCK">Unlock</button>
-						</div>
-					</div>
-					
-					<!-- pastewifkey -->
-					<div id="pastewifkey" ng-if="walletType=='pastewifkey'">
-						<h4 translate="MT_PASTE_YOUR_WIF_KEY">Paste Your WIF Key</h4>
-						<textarea class="form-control" ng-change="onWIFKeyChange()" ng-model="$parent.WIFKeyData" placeholder="" rows="3" aria-label="WIFKeyData"></textarea>
-						
-						<br />
-						
-						<div ng-if="showBtnUnlockWIFKey">
-							<h4 translate="UNLOCK_YOUR_WALLET">Unlock your Wallet</h4>
-							<button class="btn btn-primary btn-block" ng-click="decryptWallet()" translate="BTN_UNLOCK">Unlock</button>
-						</div>
-					</div>
-					
-					<!-- externalsignature -->
-					<div id="externalsignature" ng-if="walletType=='externalsignature'">
-						<h4 translate="MT_PASTE_YOUR_PUBLIC_KEY_ENCODED">Paste Your PublicKey (Encoded)</h4>
-						<textarea class="form-control" ng-change="onPublicKeyEncodedChange()" ng-model="$parent.PublicKeyEncodedData" placeholder="" rows="3" aria-label="PublicKeyEncodedData"></textarea>
-						
-						<br />
-						
-						<div ng-if="showBtnUnlockExtSig">
-							<h4 translate="UNLOCK_YOUR_WALLET">Unlock your Wallet</h4>
-							<button class="btn btn-primary btn-block" ng-click="decryptWallet()" translate="BTN_UNLOCK">Unlock</button>
-						</div>
-					</div>
-				
-				  </div>
-				</div>
-				
-				<div class="row" ng-show="showTransaction">
-					<!-- base info -->
-					<div class="col-lg-4 col-md-4">
-						<div>
-							<h3 translate="MT_STANDARD_ACCOUNTS">Standard Accounts</h3>
-							<div class="form-group">
-								<div class="btn-group btn-address">
-								  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{accounts[accountSelectIndex].address}} <span class="caretico"><span class="caret"></span></span>
-								  </button>
-								  <ul class="dropdown-menu">
-									<li ng-repeat="account in accounts"><a data-toggle="tab" href="#" ng-click="changeAcountSelectIndex($index)">{{account.address}}</a></li>
-								  </ul>
-								</div>
-							</div>
-						</div>
-						
-						<div>
-							<hr />
-						</div>
-						
-						<div>
-							<h3 translate="MT_ACCOUNT_INFO">Account Info</h3>
-							<div class="form-group">
-								<label class="control-label" translate="ADDRESS">Address: </label><br />
-								<a target="_blank" href="{{addressBrowseURL}}{{accounts[accountSelectIndex].address}}">{{accounts[accountSelectIndex].address}}</a><br />
-								
-								<label class="control-label" translate="SCRIPTHASH">ScriptHash: </label><br />
-								<span>{{accounts[accountSelectIndex].programHash}}</span><br />
-								
-								<div ng-if="accounts[accountSelectIndex].publickeyEncoded != ''">
-									<label class="control-label" translate="PUBLIC_KEY">PublicKey: </label><br />
-									<span>{{accounts[accountSelectIndex].publickeyEncoded}}</span><br />
-								</div>
-							</div>
-						</div>
-						
-						<div>
-							<hr />
-						</div>
-						
-						<div>
-							<h3 translate="MT_ACCOUNT_BALANCE">Account Balance</h3><br />
-							<div class="form-group">
-							
-								<table class="table">
-								  <tbody>
-									<tr ng-repeat="coin in coins">
-									  <td align="right" width="35%">{{coin.name}}</td>
-									  <td align="left">{{coin.balance}}</td>
-									</tr>
-								  </tbody>
-								</table>
-								
-							</div>
-						</div>
-						
-					</div>
-					
-					<!-- transaction -->
-					<div class="col-lg-8 col-md-8 col-sm-12">
-						<h3 translate="MT_SEND_TRANSACTION">Send Transaction</h3> <br />
-						
-						<div class="form-group">
-							<div>
-								<select class="form-control" ng-model="txType" ng-options="x.id as x.name for x in txTypes"></select>
-							</div>
-						</div>
-						
-						<!-- Issue Asset -->
-						<div ng-if="txType==1">
-							<div class="form-group">
-								<label class="control-label" translate="MT_ISSUE_ASSETID">Issue AssetID</label>
-								<input class="form-control" ng-model="issueAsset.issueAssetID" name="issueAssetID" placeholder="{{ 'MT_ISSUE_ASSETID' | translate }}" type="text" />
-							</div>
-							
-							<div class="form-group">
-								<label class="control-label" translate="MT_ISSUE_AMOUNT">Issue Amount</label>
-								<input class="form-control" ng-model="issueAsset.issueAmount" name="issueAmount" placeholder="{{ 'MT_ISSUE_AMOUNT' | translate }}" type="text" onkeyup="this.value=this.value.replace(/[^0-9-]+/,'');" />
-							</div>
-							
-							<div ng-if="walletType!='externalsignature'">
-								<div class="form-group">
-									<button class="btn btn-primary btn-block" ng-click="issueTransaction()" translate="BTN_ISSUE_TRANSACTION">Issue Transaction</button>
-								</div>
-							</div>
-							
-							<!-- externalsignature -->
-							<div ng-if="walletType=='externalsignature'">
-								<div class="form-group">
-									<button class="btn btn-primary btn-block" ng-click="issueTransactionUnsigned()" translate="BTN_GET_ISSUE_TRANSACTION">Get Issue Transaction</button>
-								</div>
-								
-								<hr />
-								
-								<div class="form-group">
-									<label class="control-label" translate="TX_UNSIGNED_DATA">Transaction Unsigned Data</label><br />
-									<textarea class="form-control" ng-model="$parent.$parent.txUnsignedData" id="txUnsignedData" name="txUnsignedData" placeholder="" rows="5" readonly="readonly" aria-label="txUnsignedData"></textarea>
-								</div>
-								
-								<div class="form-group">
-									<label class="control-label" translate="TX_SIGNATURE_DATA">Signature Data</label><br />
-									<textarea class="form-control" ng-model="$parent.$parent.txSignatureData" id="txSignatureData" name="txSignatureData" placeholder="" rows="5" aria-label="txSignatureData"></textarea>
-								</div>
-								
-								<hr />
-								
-								<div class="form-group">
-									<button class="btn btn-primary btn-block" ng-click="MakeTxAndSend($parent.$parent.txUnsignedData)" translate="MT_SEND_TRANSACTION">Send Transaction</button>
-								</div>
-								
-							</div>
-							
-						</div>
-						
-						<!-- Transfer Asset -->
-						<div ng-if="txType==128">
-							<div class="form-group">
-								<label class="control-label" translate="MT_TO_ADDRESS">To Address</label>
-								<input class="form-control" ng-model="Transaction.ToAddress" name="toAddress" placeholder="{{ 'ADDRESS' | translate }} ..." type="text"/>
-							</div>
-							
-							<div class="form-group">
-								<label class="control-label" translate="MT_AMOUNT_TO_SEND">Amount to Send</label>
-								<div class="input-group">
-									<input type="text" class="form-control" ng-model="Transaction.Amount" name="Amount" value="" placeholder="{{ 'AMOUNT' | translate }}" aria-label="amout" />
-									
-									<div class="input-group-btn">
-										<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{coins[coinSelectIndex].name}}<span class="caret"></span></button>
-										<ul class="dropdown-menu dropdown-menu-right">
-										  <li ng-repeat="coin in coins"><a data-toggle="tab" href="#" ng-click="changeCoinSelectIndex($index)">{{coin.name}}</a></li>
-										</ul>
-									</div>
-								</div>
-							</div>
-							
-							<div class="form-group">
-								<label class="control-label" translate="MT_FROM_ADDRESS">From Address</label>:<br />
-								<span>{{accounts[accountSelectIndex].address}}</span><br/><br/>
-							</div>
-							
-							<div ng-if="walletType!='externalsignature'">
-								<div class="form-group">
-									<!--<button class="btn btn-primary btn-block" ng-click="sendTransaction()" >Send Transaction</button>-->
-									<button class="btn btn-primary btn-block" ng-click="openModal()" translate="BTN_TRANSFER_TRANSACTION">Send Transaction</button>
-									<!--<button class="btn btn-primary btn-block" data-toggle="modal" data-target="#confirmTxModal" translate="BTN_TRANSFER_TRANSACTION">Transfer Transaction</button>-->
-								</div>
-							</div>
-							
-							<!-- externalsignature -->
-							<div ng-if="walletType=='externalsignature'">
-								<div class="form-group">
-									<button class="btn btn-primary btn-block" ng-click="transferTransactionUnsigned()" translate="BTN_GET_TRANSFER_TRANSACTION">Get Transfer Transaction</button>
-								</div>
-								
-								<hr />
-								
-								<div class="form-group">
-									<label class="control-label" translate="TX_UNSIGNED_DATA">Transaction Unsigned Data</label><br />
-									<textarea class="form-control" ng-model="$parent.$parent.txUnsignedData" id="txUnsignedData" name="txUnsignedData" placeholder="" rows="5" readonly="readonly" aria-label="txUnsignedData"></textarea>
-								</div>
-								
-								<div class="form-group">
-									<label class="control-label" translate="TX_SIGNATURE_DATA">Signature Data</label><br />
-									<textarea class="form-control" ng-model="$parent.$parent.txSignatureData" id="txSignatureData" name="txSignatureData" placeholder="" rows="5" aria-label="txSignatureData"></textarea>
-								</div>
-								
-								<hr />
-								
-								<div class="form-group">
-									<!--<button class="btn btn-primary btn-block" ng-click="MakeTxAndSend()" translate="MT_SEND_TRANSACTION">Send Transaction</button>-->
-									<button class="btn btn-primary btn-block" ng-click="openModal()" translate="MT_SEND_TRANSACTION">Send Transaction</button>
-								</div>
-								
-							</div>
-							
-						</div>
-						
-						<!-- Register Asset -->
-						<div ng-if="txType==64">
-							<div class="form-group">
-								<label class="control-label" translate="MT_ASSET_NAME">Asset Name</label>
-								<input class="form-control" ng-model="registerAsset.assetName" name="assetName" placeholder="{{ 'MT_ASSET_NAME' | translate }}" type="text"/>
-							</div>
-							
-							<div class="form-group">
-								<label class="control-label" translate="MT_ASSET_AMOUNT">Asset Amount</label>
-								<input class="form-control" ng-model="registerAsset.assetAmount" name="assetAmount" placeholder="{{ 'MT_ASSET_AMOUNT' | translate }}" type="text" onkeyup="this.value=this.value.replace(/[^0-9-]+/,'');" />
-							</div>
-							
-							<div ng-if="walletType!='externalsignature'">
-								<div class="form-group">
-									<button class="btn btn-primary btn-block" ng-click="registerTransaction()" translate="BTN_REGISTER_TRANSACTION">Register Transaction</button>
-								</div>
-							</div>
-							
-							<!-- externalsignature -->
-							<div ng-if="walletType=='externalsignature'">
-								<div class="form-group">
-									<button class="btn btn-primary btn-block" ng-click="registerTransactionUnsigned()" translate="BTN_GET_REGISTER_TRANSACTION">Get Register Transaction</button>
-								</div>
-								
-								<hr />
-								
-								<div class="form-group">
-									<label class="control-label" translate="TX_UNSIGNED_DATA">Transaction Unsigned Data</label><br />
-									<textarea class="form-control" ng-model="$parent.$parent.txUnsignedData" id="txUnsignedData" name="txUnsignedData" placeholder="" rows="5" readonly="readonly" aria-label="txUnsignedData"></textarea>
-								</div>
-								
-								<div class="form-group">
-									<label class="control-label" translate="TX_SIGNATURE_DATA">Signature Data</label><br />
-									<textarea class="form-control" ng-model="$parent.$parent.txSignatureData" id="txSignatureData" name="txSignatureData" placeholder="" rows="5" aria-label="txSignatureData"></textarea>
-								</div>
-								
-								<hr />
-								
-								<div class="form-group">
-									<button class="btn btn-primary btn-block" ng-click="MakeTxAndSend($parent.$parent.txUnsignedData)" translate="MT_SEND_TRANSACTION">Send Transaction</button>
-								</div>
-								
-							</div>
-							
-						</div>
-						
-					</div>
-				</div>
-				
-			  </div>
-			  
-			  <!-- #signatureData tab-->
-			  <div class="tab-pane fade" id="signatureData" ng-controller="SignatureDataCtrl">
-					<div class="row">
-						<div class="col-lg-12 col-md-12 col-sm-12">
-							<h1 translate="SIGNATURE_DATA">Signature Data</h1>
-						</div>
-					</div>
-					
-					<hr />
-					
-					<div class="col-lg-12 col-md-12 col-sm-12">
-						<div class="form-group">
-							<label class="control-label" translate="PRIVATE_KEY">Private Key</label><br />
-							<input type="text" class="form-control" ng-model="privateKey" name="privateKey" placeholder="5e980ec243c32cbbd2b5addc4f643774a6a6bb7123b49244b6e67cf56122eaa0" aria-label="privateKey"/>
-						</div>
-						
-						<div class="form-group">
-							<label class="control-label" translate="TX_UNSIGNED_DATA">Transaction Unsigned Data</label><br />
-							<textarea class="form-control" ng-model="txRawData" name="txRawData" placeholder="80000001da056ccdc819806bb7cd0f47a8276fa88c0960f654d617ae8165f2fd16a9440a0100029b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc500e40b5402000000082e502f35ec5cf8cc1209d0de00c550578911a79b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc500046bf414000000082e502f35ec5cf8cc1209d0de00c550578911a7" rows="5" aria-label="transaction RawData"></textarea>
-						</div>
-						
-						<div class="form-group">
-							<label class="control-label" translate="TX_SIGNATURE_DATA">Signature Data</label><br />
-							<textarea class="form-control" ng-model="signedData" id="signedData" name="signedData" placeholder="" rows="5" readonly="readonly" aria-label="signedData"></textarea>
-						</div>
-						
-						<div class="form-group">
-							<button class="btn btn-primary btn-block" ng-click="signatureData()" translate="SIGNATURE">Signature</button>
-						</div>
-						
-					</div>
-					
-			  </div>
-			  
-			  <!-- #tools tab-->
-			  <div class="tab-pane fade" id="tools" ng-controller="ToolsCtrl">
-					<div class="row">
-						<div class="col-lg-12 col-md-12 col-sm-12">
-							<h1 translate="TOOLS">Tools</h1>
-						</div>
-					</div>
-					
-					<hr />
-					
-					<div class="col-lg-12 col-md-12 col-sm-12">
-						
-						<!-- WIF -->
-						<div class="form-group">
-							<label class="control-label">WIF</label><br />
-							<div class="input-group">
-								<input type="text" class="form-control" ng-model="wif" name="wif" placeholder="KzPb8MDmbLYzSXotG8FDwuRw5zTRba2y1Tzf9szrPFZHC5Ss4DVJ" aria-label="WIF" />
-								<span class="input-group-btn">
-									<button type="button" class="btn btn-primary" ng-click="getPrivateKey()" translate="BTN_GENERATE_PRIVATEKEY">&nbspGenerate PrivateKey&nbsp</button>
+              <div class="form-group {{styleStringOfCreatePassword2}}" ng-if="!isDisplayPassword">
+                <label class="control-label" translate="RE_ENTER_PASSWORD">Re-Enter password:</label>
+                <input class="form-control" ng-change="changeCreatePassword2()" ng-model="$parent.createPassword2"
+                       placeholder="{{ 'RE_ENTER_PASSWORD' | translate }}" type="text" onfocus="this.type='password'"
+                       autocomplete="off"/>
+              </div>
+
+              <!-- fromRandomPrivateKey -->
+              <div id="fromRandomPrivateKey" ng-if="createType=='fromRandomPrivateKey'">
+                <br/>
+
+                <div class="form-group" ng-if="showBtnGenerateWallet">
+                  <button class="btn btn-primary btn-block" ng-click="generateWalletFileFromRandomPrivateKey()"
+                          translate="GENERATE_WALLET">Generate Wallet
+                  </button>
+                </div>
+              </div>
+
+              <!-- fromPrivateKey -->
+              <div id="fromPrivateKey" ng-if="createType=='fromPrivateKey'">
+                <div class="form-group">
+                  <label class="control-label" translate="GW_PASTE_YOUR_PRIVATE_KEY">Paste Your Private Key:</label>
+                  <input class="form-control" type="text" ng-model="$parent.privateKey" placeholder=""
+                         aria-label=""></textarea>
+                </div>
+
+                <div class="form-group" ng-if="showBtnGenerateWallet">
+                  <button class="btn btn-primary btn-block" ng-click="generateWalletFileFromPrivateKey()"
+                          translate="GENERATE_WALLET">Generate Wallet
+                  </button>
+                </div>
+              </div>
+
+              <!-- fromWIFKey -->
+              <div id="fromWIFKey" ng-if="createType=='fromWIFKey'">
+                <div class="form-group">
+                  <label class="control-label" translate="GW_PASTE_YOUR_WIF_KEY">Paste Your WIF Key:</label>
+                  <input class="form-control" type="text" ng-model="$parent.WIFKey" placeholder=""
+                         aria-label=""></textarea>
+                </div>
+
+                <div class="form-group" ng-if="showBtnGenerateWallet">
+                  <button class="btn btn-primary btn-block" ng-click="generateWalletFileFromWIFKey()"
+                          translate="GENERATE_WALLET">Generate Wallet
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="row" ng-show="showCreateWalletDownload">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+
+              <h4 translate="GW_SAVE_WALLET_FILE">1. Save your Wallet File encrypted by your password.</h4>
+              <div class="form-group">
+                <a tabindex="0" role="button" class="btn btn-primary btn-block" href="{{objectURL}}"
+                   download="wallet--{{objectName}}.db3" ng-click="downloaded()" translate="DOWNLOAD">Download</a>
+              </div>
+
+              <br/>
+
+              <h4 translate="GW_YOUR_PRIVATE_KEY">2. Your Private Key, Please keep it safe.</h4>
+              <div class="form-group">
+                <input class="form-control" type="text" ng-model="privateKey" id="privateKey" name="privateKey"
+                       readonly="readonly" aria-label="privateKey">
+                <input class="form-control" type="hidden" id="key" name="key" readonly="readonly" aria-label="key">
+              </div>
+
+              <br/>
+
+              <div class="form-group" ng-if="fileDownloaded">
+                <button class="btn btn-default btn-block" ng-click="nextstep()" translate="GW_NEXT_STEP">Next Step: Make
+                                                                                                         Transaction
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- #sendTransaction tab-->
+        <div class="tab-pane fade" id="sendTransaction">
+
+          <div class="row">
+            <div class="col-lg-8 col-md-8 col-sm-6">
+              <h1 translate="SEND_TRANSACTION">Send Transaction</h1>
+            </div>
+          </div>
+
+          <br/>
+
+          <div class="row jumbotron" ng-show="showOpenWallet">
+            <!-- Column 1 - Select Type of Key -->
+            <div class="form-group col-lg-4 col-md-4 col-sm-6">
+              <h4 translate="MT_INFO">How would you like to access your wallet?</h4>
+              <div class="radio">
+                <label>
+                  <input type="radio" ng-model="walletType" value="fileupload" name="radiofile" id="radiofile">
+                  <span translate="KEYSTORE_FILE">Keystore File (DB / DB3)</span>
+                </label>
+              </div>
+
+              <div class="radio">
+                <label>
+                  <input type="radio" ng-model="walletType" value="pasteprivkey" name="radioprivkey" id="radioprivkey">
+                  <span translate="PRIVATE_KEY">Private Key</span>
+                </label>
+              </div>
+
+              <div class="radio">
+                <label>
+                  <input type="radio" ng-model="walletType" value="pastewifkey" name="radiowifkey" id="radiowifkey">
+                  <span translate="WIF_KEY">WIF Key</span>
+                </label>
+              </div>
+
+              <div class="radio">
+                <label>
+                  <input type="radio" ng-model="walletType" value="externalsignature" name="radioextsig"
+                         id="radioextsig">
+                  <span translate="EXTERNAL_SIGNATURE">External Signature</span>
+                </label>
+              </div>
+            </div>
+            <!-- Column 1 - Select Type of Key -->
+
+            <div class="col-lg-6 col-md-6 col-sm-6">
+
+              <!-- fileupload -->
+              <div id="fileupload" ng-if="walletType=='fileupload'">
+                <h4 translate="SELECT_YOUR_WALLET_FILE">Select Your Wallet File</h4>
+                <input style="display:none;" type="file" on-read-file="showContent($wallet)" id="fselector"/>
+                <button class="btn btn-default btn-block" ng-click="openFileDialog()"
+                        translate="BTN_SELECT_WALLET_FILE">Select Wallet File...
+                </button>
+
+                <div ng-if="requirePass" class="form-group has-success">
+                  <label class="control-label" translate="MT_YOUR_WALLET_IS_ENCRYPTED">Your wallet is encrypted. Please
+                                                                                       enter the password:</label>
+                  <input class="form-control" ng-change="onFilePassChange()" ng-model="$parent.$parent.filePassword"
+                         placeholder="{{ 'PASSWORD' | translate }}" type="text" onfocus="this.type='password'"
+                         autocomplete="off"/>
+                </div>
+
+                <div ng-if="showBtnUnlock">
+                  <h4 translate="UNLOCK_YOUR_WALLET">Unlock your wallet</h4>
+                  <button class="btn btn-primary btn-block" ng-click="decryptWallet()" translate="BTN_UNLOCK">Unlock
+                  </button>
+                </div>
+              </div>
+
+              <!-- pasteprivkey -->
+              <div id="pasteprivkey" ng-if="walletType=='pasteprivkey'">
+                <h4 translate="MT_PASTE_YOUR_PRIVATE_KEY">Paste Your Private Key</h4>
+                <textarea class="form-control" ng-change="onPrivateKeyChange()" ng-model="$parent.privateKeyData"
+                          placeholder="" rows="3" aria-label="privateKeyData"></textarea>
+
+                <br/>
+
+                <div ng-if="showBtnUnlockPrivateKey">
+                  <h4 translate="UNLOCK_YOUR_WALLET">Unlock your Wallet</h4>
+                  <button class="btn btn-primary btn-block" ng-click="decryptWallet()" translate="BTN_UNLOCK">Unlock
+                  </button>
+                </div>
+              </div>
+
+              <!-- pastewifkey -->
+              <div id="pastewifkey" ng-if="walletType=='pastewifkey'">
+                <h4 translate="MT_PASTE_YOUR_WIF_KEY">Paste Your WIF Key</h4>
+                <textarea class="form-control" ng-change="onWIFKeyChange()" ng-model="$parent.WIFKeyData" placeholder=""
+                          rows="3" aria-label="WIFKeyData"></textarea>
+
+                <br/>
+
+                <div ng-if="showBtnUnlockWIFKey">
+                  <h4 translate="UNLOCK_YOUR_WALLET">Unlock your Wallet</h4>
+                  <button class="btn btn-primary btn-block" ng-click="decryptWallet()" translate="BTN_UNLOCK">Unlock
+                  </button>
+                </div>
+              </div>
+
+              <!-- externalsignature -->
+              <div id="externalsignature" ng-if="walletType=='externalsignature'">
+                <h4 translate="MT_PASTE_YOUR_PUBLIC_KEY_ENCODED">Paste Your PublicKey (Encoded)</h4>
+                <textarea class="form-control" ng-change="onPublicKeyEncodedChange()"
+                          ng-model="$parent.PublicKeyEncodedData" placeholder="" rows="3"
+                          aria-label="PublicKeyEncodedData"></textarea>
+
+                <br/>
+
+                <div ng-if="showBtnUnlockExtSig">
+                  <h4 translate="UNLOCK_YOUR_WALLET">Unlock your Wallet</h4>
+                  <button class="btn btn-primary btn-block" ng-click="decryptWallet()" translate="BTN_UNLOCK">Unlock
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="row" ng-show="showTransaction">
+            <!-- base info -->
+            <div class="col-lg-4 col-md-4">
+              <div>
+                <h3 translate="MT_STANDARD_ACCOUNTS">Standard Accounts</h3>
+                <div class="form-group">
+                  <div class="btn-group btn-address">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">{{accounts[accountSelectIndex].address}} <span
+                        class="caretico"><span class="caret"></span></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li ng-repeat="account in accounts"><a data-toggle="tab" href="#"
+                                                             ng-click="changeAcountSelectIndex($index)">{{account.address}}</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <hr/>
+              </div>
+
+              <div>
+                <h3 translate="MT_ACCOUNT_INFO">Account Info</h3>
+                <div class="form-group">
+                  <label class="control-label" translate="ADDRESS">Address: </label><br/>
+                  <a target="_blank" href="{{addressBrowseURL}}{{accounts[accountSelectIndex].address}}">{{accounts[accountSelectIndex].address}}</a><br/>
+
+                  <label class="control-label" translate="SCRIPTHASH">ScriptHash: </label><br/>
+                  <span>{{accounts[accountSelectIndex].programHash}}</span><br/>
+
+                  <div ng-if="accounts[accountSelectIndex].publickeyEncoded != ''">
+                    <label class="control-label" translate="PUBLIC_KEY">PublicKey: </label><br/>
+                    <span>{{accounts[accountSelectIndex].publickeyEncoded}}</span><br/>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <hr/>
+              </div>
+
+              <div>
+                <h3 translate="MT_ACCOUNT_BALANCE">Account Balance</h3><br/>
+                <div class="form-group">
+
+                  <table class="table">
+                    <tbody>
+                      <tr ng-repeat="coin in coins">
+                        <td align="right" width="35%">{{coin.name}}</td>
+                        <td align="left">{{coin.balance}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                </div>
+              </div>
+
+            </div>
+
+            <!-- transaction -->
+            <div class="col-lg-8 col-md-8 col-sm-12">
+              <h3 translate="MT_SEND_TRANSACTION">Send Transaction</h3> <br/>
+
+              <div class="form-group">
+                <div>
+                  <select class="form-control" ng-model="txType" ng-options="x.id as x.name for x in txTypes"></select>
+                </div>
+              </div>
+
+              <!-- Issue Asset -->
+              <div ng-if="txType==1">
+                <div class="form-group">
+                  <label class="control-label" translate="MT_ISSUE_ASSETID">Issue AssetID</label>
+                  <input class="form-control" ng-model="issueAsset.issueAssetID" name="issueAssetID"
+                         placeholder="{{ 'MT_ISSUE_ASSETID' | translate }}" type="text"/>
+                </div>
+
+                <div class="form-group">
+                  <label class="control-label" translate="MT_ISSUE_AMOUNT">Issue Amount</label>
+                  <input class="form-control" ng-model="issueAsset.issueAmount" name="issueAmount"
+                         placeholder="{{ 'MT_ISSUE_AMOUNT' | translate }}" type="text"
+                         onkeyup="this.value=this.value.replace(/[^0-9-]+/,'')"/>
+                </div>
+
+                <div ng-if="walletType!='externalsignature'">
+                  <div class="form-group">
+                    <button class="btn btn-primary btn-block" ng-click="issueTransaction()"
+                            translate="BTN_ISSUE_TRANSACTION">Issue Transaction
+                    </button>
+                  </div>
+                </div>
+
+                <!-- externalsignature -->
+                <div ng-if="walletType=='externalsignature'">
+                  <div class="form-group">
+                    <button class="btn btn-primary btn-block" ng-click="issueTransactionUnsigned()"
+                            translate="BTN_GET_ISSUE_TRANSACTION">Get Issue Transaction
+                    </button>
+                  </div>
+
+                  <hr/>
+
+                  <div class="form-group">
+                    <label class="control-label" translate="TX_UNSIGNED_DATA">Transaction Unsigned Data</label><br/>
+                    <textarea class="form-control" ng-model="$parent.$parent.txUnsignedData" id="txUnsignedData"
+                              name="txUnsignedData" placeholder="" rows="5" readonly="readonly"
+                              aria-label="txUnsignedData"></textarea>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="control-label" translate="TX_SIGNATURE_DATA">Signature Data</label><br/>
+                    <textarea class="form-control" ng-model="$parent.$parent.txSignatureData" id="txSignatureData"
+                              name="txSignatureData" placeholder="" rows="5" aria-label="txSignatureData"></textarea>
+                  </div>
+
+                  <hr/>
+
+                  <div class="form-group">
+                    <button class="btn btn-primary btn-block" ng-click="MakeTxAndSend($parent.$parent.txUnsignedData)"
+                            translate="MT_SEND_TRANSACTION">Send Transaction
+                    </button>
+                  </div>
+
+                </div>
+
+              </div>
+
+              <!-- Transfer Asset -->
+              <div ng-if="txType==128">
+                <div class="form-group">
+                  <label class="control-label" translate="MT_TO_ADDRESS">To Address</label>
+                  <input class="form-control" ng-model="Transaction.ToAddress" name="toAddress"
+                         placeholder="{{ 'ADDRESS' | translate }} ..." type="text"/>
+                </div>
+
+                <div class="form-group">
+                  <label class="control-label" translate="MT_AMOUNT_TO_SEND">Amount to Send</label>
+                  <div class="input-group">
+                    <input type="text" class="form-control" ng-model="Transaction.Amount" name="Amount" value=""
+                           placeholder="{{ 'AMOUNT' | translate }}" aria-label="amout"/>
+
+                    <div class="input-group-btn">
+                      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+                              aria-haspopup="true" aria-expanded="false">{{coins[coinSelectIndex].name}}<span
+                          class="caret"></span></button>
+                      <ul class="dropdown-menu dropdown-menu-right">
+                        <li ng-repeat="coin in coins"><a data-toggle="tab" href="#"
+                                                         ng-click="changeCoinSelectIndex($index)">{{coin.name}}</a></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="control-label" translate="MT_FROM_ADDRESS">From Address</label>:<br/>
+                  <span>{{accounts[accountSelectIndex].address}}</span><br/><br/>
+                </div>
+
+                <div ng-if="walletType!='externalsignature'">
+                  <div class="form-group">
+                    <!--<button class="btn btn-primary btn-block" ng-click="sendTransaction()" >Send Transaction</button>-->
+                    <button class="btn btn-primary btn-block" ng-click="openModal()"
+                            translate="BTN_TRANSFER_TRANSACTION">Send Transaction
+                    </button>
+                    <!--<button class="btn btn-primary btn-block" data-toggle="modal" data-target="#confirmTxModal" translate="BTN_TRANSFER_TRANSACTION">Transfer Transaction</button>-->
+                  </div>
+                </div>
+
+                <!-- externalsignature -->
+                <div ng-if="walletType=='externalsignature'">
+                  <div class="form-group">
+                    <button class="btn btn-primary btn-block" ng-click="transferTransactionUnsigned()"
+                            translate="BTN_GET_TRANSFER_TRANSACTION">Get Transfer Transaction
+                    </button>
+                  </div>
+
+                  <hr/>
+
+                  <div class="form-group">
+                    <label class="control-label" translate="TX_UNSIGNED_DATA">Transaction Unsigned Data</label><br/>
+                    <textarea class="form-control" ng-model="$parent.$parent.txUnsignedData" id="txUnsignedData"
+                              name="txUnsignedData" placeholder="" rows="5" readonly="readonly"
+                              aria-label="txUnsignedData"></textarea>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="control-label" translate="TX_SIGNATURE_DATA">Signature Data</label><br/>
+                    <textarea class="form-control" ng-model="$parent.$parent.txSignatureData" id="txSignatureData"
+                              name="txSignatureData" placeholder="" rows="5" aria-label="txSignatureData"></textarea>
+                  </div>
+
+                  <hr/>
+
+                  <div class="form-group">
+                    <!--<button class="btn btn-primary btn-block" ng-click="MakeTxAndSend()" translate="MT_SEND_TRANSACTION">Send Transaction</button>-->
+                    <button class="btn btn-primary btn-block" ng-click="openModal()" translate="MT_SEND_TRANSACTION">
+                      Send Transaction
+                    </button>
+                  </div>
+
+                </div>
+
+              </div>
+
+              <!-- Register Asset -->
+              <div ng-if="txType==64">
+                <div class="form-group">
+                  <label class="control-label" translate="MT_ASSET_NAME">Asset Name</label>
+                  <input class="form-control" ng-model="registerAsset.assetName" name="assetName"
+                         placeholder="{{ 'MT_ASSET_NAME' | translate }}" type="text"/>
+                </div>
+
+                <div class="form-group">
+                  <label class="control-label" translate="MT_ASSET_AMOUNT">Asset Amount</label>
+                  <input class="form-control" ng-model="registerAsset.assetAmount" name="assetAmount"
+                         placeholder="{{ 'MT_ASSET_AMOUNT' | translate }}" type="text"
+                         onkeyup="this.value=this.value.replace(/[^0-9-]+/,'')"/>
+                </div>
+
+                <div ng-if="walletType!='externalsignature'">
+                  <div class="form-group">
+                    <button class="btn btn-primary btn-block" ng-click="registerTransaction()"
+                            translate="BTN_REGISTER_TRANSACTION">Register Transaction
+                    </button>
+                  </div>
+                </div>
+
+                <!-- externalsignature -->
+                <div ng-if="walletType=='externalsignature'">
+                  <div class="form-group">
+                    <button class="btn btn-primary btn-block" ng-click="registerTransactionUnsigned()"
+                            translate="BTN_GET_REGISTER_TRANSACTION">Get Register Transaction
+                    </button>
+                  </div>
+
+                  <hr/>
+
+                  <div class="form-group">
+                    <label class="control-label" translate="TX_UNSIGNED_DATA">Transaction Unsigned Data</label><br/>
+                    <textarea class="form-control" ng-model="$parent.$parent.txUnsignedData" id="txUnsignedData"
+                              name="txUnsignedData" placeholder="" rows="5" readonly="readonly"
+                              aria-label="txUnsignedData"></textarea>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="control-label" translate="TX_SIGNATURE_DATA">Signature Data</label><br/>
+                    <textarea class="form-control" ng-model="$parent.$parent.txSignatureData" id="txSignatureData"
+                              name="txSignatureData" placeholder="" rows="5" aria-label="txSignatureData"></textarea>
+                  </div>
+
+                  <hr/>
+
+                  <div class="form-group">
+                    <button class="btn btn-primary btn-block" ng-click="MakeTxAndSend($parent.$parent.txUnsignedData)"
+                            translate="MT_SEND_TRANSACTION">Send Transaction
+                    </button>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- #signatureData tab-->
+        <div class="tab-pane fade" id="signatureData" ng-controller="SignatureDataCtrl">
+          <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+              <h1 translate="SIGNATURE_DATA">Signature Data</h1>
+            </div>
+          </div>
+
+          <hr/>
+
+          <div class="col-lg-12 col-md-12 col-sm-12">
+            <div class="form-group">
+              <label class="control-label" translate="PRIVATE_KEY">Private Key</label><br/>
+              <input type="text" class="form-control" ng-model="privateKey" name="privateKey"
+                     placeholder="5e980ec243c32cbbd2b5addc4f643774a6a6bb7123b49244b6e67cf56122eaa0"
+                     aria-label="privateKey"/>
+            </div>
+
+            <div class="form-group">
+              <label class="control-label" translate="TX_UNSIGNED_DATA">Transaction Unsigned Data</label><br/>
+              <textarea class="form-control" ng-model="txRawData" name="txRawData"
+                        placeholder="80000001da056ccdc819806bb7cd0f47a8276fa88c0960f654d617ae8165f2fd16a9440a0100029b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc500e40b5402000000082e502f35ec5cf8cc1209d0de00c550578911a79b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc500046bf414000000082e502f35ec5cf8cc1209d0de00c550578911a7"
+                        rows="5" aria-label="transaction RawData"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="control-label" translate="TX_SIGNATURE_DATA">Signature Data</label><br/>
+              <textarea class="form-control" ng-model="signedData" id="signedData" name="signedData" placeholder=""
+                        rows="5" readonly="readonly" aria-label="signedData"></textarea>
+            </div>
+
+            <div class="form-group">
+              <button class="btn btn-primary btn-block" ng-click="signatureData()" translate="SIGNATURE">Signature
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- #tools tab-->
+        <div class="tab-pane fade" id="tools" ng-controller="ToolsCtrl">
+          <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+              <h1 translate="TOOLS">Tools</h1>
+            </div>
+          </div>
+
+          <hr/>
+
+          <div class="col-lg-12 col-md-12 col-sm-12">
+
+            <!-- WIF -->
+            <div class="form-group">
+              <label class="control-label">WIF</label><br/>
+              <div class="input-group">
+                <input type="text" class="form-control" ng-model="wif" name="wif"
+                       placeholder="KzPb8MDmbLYzSXotG8FDwuRw5zTRba2y1Tzf9szrPFZHC5Ss4DVJ" aria-label="WIF"/>
+                <span class="input-group-btn">
+									<button type="button" class="btn btn-primary" ng-click="getPrivateKey()"
+                          translate="BTN_GENERATE_PRIVATEKEY">&nbspGenerate PrivateKey&nbsp</button>
 								</span>
-							</div>
-						</div>
-						
-						<!-- privateKey -->
-						<div class="form-group">
-							<label class="control-label" translate="PRIVATE_KEY">Private Key</label><br />
-							<div class="input-group">
-								<input type="text" class="form-control" ng-model="privateKey" name="privateKey" placeholder="5e980ec243c32cbbd2b5addc4f643774a6a6bb7123b49244b6e67cf56122eaa0" aria-label="privateKey" />
-								<span class="input-group-btn">
-									<button type="button" class="btn btn-primary" ng-click="getPublicKey(0)" translate="BTN_GENERATE_PUBLICKEY">&nbsp&nbspGenerate PublicKey&nbsp&nbsp</button>
+              </div>
+            </div>
+
+            <!-- privateKey -->
+            <div class="form-group">
+              <label class="control-label" translate="PRIVATE_KEY">Private Key</label><br/>
+              <div class="input-group">
+                <input type="text" class="form-control" ng-model="privateKey" name="privateKey"
+                       placeholder="5e980ec243c32cbbd2b5addc4f643774a6a6bb7123b49244b6e67cf56122eaa0"
+                       aria-label="privateKey"/>
+                <span class="input-group-btn">
+									<button type="button" class="btn btn-primary" ng-click="getPublicKey(0)"
+                          translate="BTN_GENERATE_PUBLICKEY">&nbsp&nbspGenerate PublicKey&nbsp&nbsp</button>
 								</span>
-							</div>
-						</div>
-						
-						<!-- publicKey -->
-						<div class="form-group">
-							<label class="control-label" translate="PUBLIC_KEY">Public Key</label><br />
-							<div class="input-group">
-								<input type="text" class="form-control" ng-model="publicKey" name="publicKey" placeholder="049fbb47841f7338c0c654addd6225995642b5b6d492413563f7f8755ba83c0ecd645b8145bfbb0d261a398795b88d0f83fecf9773a43c762ab5267b19196c0a93" aria-label="publicKey" />
-								<span class="input-group-btn">
-									<button type="button" class="btn btn-primary" ng-click="getPublicKeyEncoded()" translate="BTN_GENERATE_PUBLICKEY_ENCODE">&nbsp&nbsp&nbsp&nbspPublicKey Encode&nbsp&nbsp&nbsp&nbsp</button>
+              </div>
+            </div>
+
+            <!-- publicKey -->
+            <div class="form-group">
+              <label class="control-label" translate="PUBLIC_KEY">Public Key</label><br/>
+              <div class="input-group">
+                <input type="text" class="form-control" ng-model="publicKey" name="publicKey"
+                       placeholder="049fbb47841f7338c0c654addd6225995642b5b6d492413563f7f8755ba83c0ecd645b8145bfbb0d261a398795b88d0f83fecf9773a43c762ab5267b19196c0a93"
+                       aria-label="publicKey"/>
+                <span class="input-group-btn">
+									<button type="button" class="btn btn-primary" ng-click="getPublicKeyEncoded()"
+                          translate="BTN_GENERATE_PUBLICKEY_ENCODE">&nbsp&nbsp&nbsp&nbspPublicKey Encode&nbsp&nbsp&nbsp&nbsp</button>
 								</span>
-							</div>
-						</div>
-						
-						<!-- publicKeyEncode -->
-						<div class="form-group">
-							<label class="control-label" translate="PUBLIC_KEY_ENCODED">Public Key Encoded</label><br />
-							<div class="input-group">
-								<input type="text" class="form-control" ng-model="publicKeyEncode" name="publicKeyEncode" placeholder="0276e8dfdf8f0b25ea96fe0fbe179d727970c12fe340ef2ac8121623a78e6eb4a2" aria-label="publicKeyEncode" />
-								<span class="input-group-btn">
+              </div>
+            </div>
+
+            <!-- publicKeyEncode -->
+            <div class="form-group">
+              <label class="control-label" translate="PUBLIC_KEY_ENCODED">Public Key Encoded</label><br/>
+              <div class="input-group">
+                <input type="text" class="form-control" ng-model="publicKeyEncode" name="publicKeyEncode"
+                       placeholder="0276e8dfdf8f0b25ea96fe0fbe179d727970c12fe340ef2ac8121623a78e6eb4a2"
+                       aria-label="publicKeyEncode"/>
+                <span class="input-group-btn">
 									<button type="button" class="btn btn-primary" ng-click="getScript()" translate="BTN_GENERATE_SCRIPT">&nbsp&nbsp&nbsp&nbsp&nbsp&nbspGenerate Script&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</button>
 								</span>
-							</div>
-						</div>
-						
-						<!-- script -->
-						<div class="form-group">
-							<label class="control-label" translate="SCRIPT">Script</label><br />
-							<div class="input-group">
-								<input type="text" class="form-control" ng-model="script" name="script" placeholder="210276e8dfdf8f0b25ea96fe0fbe179d727970c12fe340ef2ac8121623a78e6eb4a2ac" aria-label="script" />
-								<span class="input-group-btn">
-									<button type="button" class="btn btn-primary" ng-click="getScriptHash()" translate="BTN_GENERATE_SCRIPTHASH">Generate ScriptHash</button>
-								</span>
-							</div>
-						</div>
-						
-						<!-- scriptHash -->
-						<div class="form-group">
-							<label class="control-label" translate="SCRIPTHASH">ScriptHash</label><br />
-							<div class="input-group">
-								<input type="text" class="form-control" ng-model="scriptHash" name="scriptHash" placeholder="c2225536c82a70dd3688d8467b23e2b60d4785a1" aria-label="scriptHash" />
-								<span class="input-group-btn">
-									<button type="button" class="btn btn-primary" ng-click="getAddress()" translate="BTN_GENERATE_ADDRESS">&nbsp&nbsp&nbsp&nbspGenerate Address&nbsp&nbsp&nbsp&nbsp</button>
-								</span>
-							</div>
-						</div>
-						
-						<!-- Address -->
-						<div class="form-group">
-							<label class="control-label" translate="ADDRESS">Address</label><br />
-							<input type="text" class="form-control" ng-model="address" name="address" placeholder="AZUMsCifwXMr3kMXwKuNwge9ZjhFuMEHwM" aria-label="address" />
-						</div>
-						
-					</div>
-					
-			  </div>
-			  
-		  </div>
-		  
-		</div>
-		
-		<!-- confirm Transaction Modal -->
-		<!--
-		<div class="modal fade" id="confirmTxModal" tabindex="-1" role="dialog" aria-labelledby="confirmTxModal" aria-hidden="true">
-		  <div class="modal-dialog">
-			<div class="modal-content"> -->
-			<script type="text/ng-template" id="myModalContent.html">
-			
-			  <div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">&times;</button>
-				<h2 class="modal-title modal-title-warning" translate="WARNING">Warning!</h2>
-			  </div>
-			  
-			  <div class="modal-body">
-				<p>{{ 'MT_TO_ADDRESS' | translate }}: <b>{{ToAddress}}</b></p>
-				<p>{{ 'AMOUNT' | translate }}: <b>{{Value}}</b></p>
-				<p>{{ 'ASSETNAME' | translate }}: <b>{{AssetName}}</b></p>
-				<p>{{ 'ASSETID' | translate }}: <b>{{AssetID}}</b></p>
-				<p>{{ 'MT_FROM_ADDRESS' | translate }}: <b>{{FromAddress}}</b></p>
-				<p ng-if="txModify" class="text-danger">{{ 'MT_MODAL_DANGER_1' | translate }}</p>
-				
-				<hr />
-				<p>{{ 'MT_YOU_ARE_CONNECTED_TO_NODE' | translate }} <b>{{hostInfo[hostSelectIndex].hostName}}</b>, {{ 'MT_PROVIDED_BY' | translate }} <b>{{hostInfo[hostSelectIndex].hostProvider}}<b> </p>
-				<p><b>{{ 'MT_ARE_YOU_SURE_TO_SEND_TRANSACTION' | translate }}</b></p>
-			  </div>
-			  
-			  <div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">{{ 'BTN_NO_LET_ME_THINK' | translate }}</button>
-				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="ok()" ng-if="txModify" disabled="disabled">{{ 'BTN_YES_SURE' | translate }}</button>
-				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="ok()" ng-if="!txModify">{{ 'BTN_YES_SURE' | translate }}</button>
-			  </div>
-			  
-			</script>
-			<!--  
-			</div>
-		  </div>
-		</div>-->
+              </div>
+            </div>
 
-		<!-- alert -->
-		<div class="navbar-fixed-bottom alert popup {{notifier.class}} animated-show-hide" ng-show="notifier.show" role="alert" aria-live="assertive">
-			<button type="button" class="close" aria-label="dismiss" ng-click="notifier.close()" >&times; </button>
-			<span class="{{notifier.icon}}" aria-hidden="true"></span>
-			<span class="sr-only">{{notifier.class}}</span>
-			<span ng-bind-html="notifier.message"></span>
-		</div>
-		
-		<footer class="footer" role="footer" aria-label="footer" >
-			<div>
-			
-				  <div class="col-sm-12">
-					<p align="center">
-					  NEO Wallet (c) 2017. <a href="https://github.com/neochainio/neowallet">Github</a>
-					</p>
-				  </div>
-  
-			</div>
-		</footer>
-		
-		<script>
-			var _hmt = _hmt || [];
-			(function() {
-			  var hm = document.createElement("script");
-			  hm.src = "https://hm.baidu.com/hm.js?dc46e6b584efcf293a6a9805b90b3f35";
-			  var s = document.getElementsByTagName("script")[0]; 
-			  s.parentNode.insertBefore(hm, s);
-			})();
-		</script>
+            <!-- script -->
+            <div class="form-group">
+              <label class="control-label" translate="SCRIPT">Script</label><br/>
+              <div class="input-group">
+                <input type="text" class="form-control" ng-model="script" name="script"
+                       placeholder="210276e8dfdf8f0b25ea96fe0fbe179d727970c12fe340ef2ac8121623a78e6eb4a2ac"
+                       aria-label="script"/>
+                <span class="input-group-btn">
+									<button type="button" class="btn btn-primary" ng-click="getScriptHash()"
+                          translate="BTN_GENERATE_SCRIPTHASH">Generate ScriptHash</button>
+								</span>
+              </div>
+            </div>
 
-    </body>
-	
+            <!-- scriptHash -->
+            <div class="form-group">
+              <label class="control-label" translate="SCRIPTHASH">ScriptHash</label><br/>
+              <div class="input-group">
+                <input type="text" class="form-control" ng-model="scriptHash" name="scriptHash"
+                       placeholder="c2225536c82a70dd3688d8467b23e2b60d4785a1" aria-label="scriptHash"/>
+                <span class="input-group-btn">
+									<button type="button" class="btn btn-primary" ng-click="getAddress()"
+                          translate="BTN_GENERATE_ADDRESS">&nbsp&nbsp&nbsp&nbspGenerate Address&nbsp&nbsp&nbsp&nbsp</button>
+								</span>
+              </div>
+            </div>
+
+            <!-- Address -->
+            <div class="form-group">
+              <label class="control-label" translate="ADDRESS">Address</label><br/>
+              <input type="text" class="form-control" ng-model="address" name="address"
+                     placeholder="AZUMsCifwXMr3kMXwKuNwge9ZjhFuMEHwM" aria-label="address"/>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- confirm Transaction Modal -->
+    <!--
+    <div class="modal fade" id="confirmTxModal" tabindex="-1" role="dialog" aria-labelledby="confirmTxModal" aria-hidden="true">
+      <div class="modal-dialog">
+      <div class="modal-content"> -->
+    <script type="text/ng-template" id="myModalContent.html">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">&times;</button>
+        <h2 class="modal-title modal-title-warning" translate="WARNING">Warning!</h2>
+      </div>
+
+      <div class="modal-body">
+        <p>{{ 'MT_TO_ADDRESS' | translate }}: <b>{{ToAddress}}</b></p>
+        <p>{{ 'AMOUNT' | translate }}: <b>{{Value}}</b></p>
+        <p>{{ 'ASSETNAME' | translate }}: <b>{{AssetName}}</b></p>
+        <p>{{ 'ASSETID' | translate }}: <b>{{AssetID}}</b></p>
+        <p>{{ 'MT_FROM_ADDRESS' | translate }}: <b>{{FromAddress}}</b></p>
+        <p ng-if="txModify" class="text-danger">{{ 'MT_MODAL_DANGER_1' | translate }}</p>
+
+        <hr/>
+        <p>{{ 'MT_YOU_ARE_CONNECTED_TO_NODE' | translate }} <b>{{hostInfo[hostSelectIndex].hostName}}</b>, {{
+           'MT_PROVIDED_BY' | translate }} <b>{{hostInfo[hostSelectIndex].hostProvider}}<b></p>
+        <p><b>{{ 'MT_ARE_YOU_SURE_TO_SEND_TRANSACTION' | translate }}</b></p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">{{ 'BTN_NO_LET_ME_THINK'
+                                                                                               | translate }}
+        </button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="ok()" ng-if="txModify"
+                disabled="disabled">{{ 'BTN_YES_SURE' | translate }}
+        </button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="ok()" ng-if="!txModify">{{
+                                                                                                             'BTN_YES_SURE'
+                                                                                                             | translate
+                                                                                                             }}
+        </button>
+      </div>
+
+    </script>
+    <!--
+    </div>
+    </div>
+  </div>-->
+
+    <!-- alert -->
+    <div class="navbar-fixed-bottom alert popup {{notifier.class}} animated-show-hide" ng-show="notifier.show"
+         role="alert" aria-live="assertive">
+      <button type="button" class="close" aria-label="dismiss" ng-click="notifier.close()">&times;</button>
+      <span class="{{notifier.icon}}" aria-hidden="true"></span>
+      <span class="sr-only">{{notifier.class}}</span>
+      <span ng-bind-html="notifier.message"></span>
+    </div>
+
+    <footer class="footer" role="footer" aria-label="footer">
+      <div>
+
+        <div class="col-sm-12">
+          <p align="center">
+            NEO Wallet (c) 2017. <a href="https://github.com/neochainio/neowallet">Github</a>
+          </p>
+        </div>
+
+      </div>
+    </footer>
+
+    <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement('script')
+        hm.src = 'https://hm.baidu.com/hm.js?dc46e6b584efcf293a6a9805b90b3f35'
+        var s = document.getElementsByTagName('script')[0]
+        s.parentNode.insertBefore(hm, s)
+      })()
+    </script>
+
+  </body>
+
 </html>
