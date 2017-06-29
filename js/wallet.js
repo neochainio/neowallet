@@ -555,6 +555,61 @@ Wallet.TransferTransaction = function ($coin, $publicKeyEncoded, $toAddress, $Am
 	return ab2hexstring(data);
 };
 
+Wallet.ClaimTransaction = function ($claims, $publicKeyEncoded, $toAddress, $Amount) {
+
+	var signatureScript = Wallet.createSignatureScript($publicKeyEncoded);
+	//console.log( signatureScript.toString('hex') );
+
+	var myProgramHash = Wallet.getHash(signatureScript);
+	//console.log( myProgramHash.toString() );
+
+	////////////////////////////////////////////////////////////////////////
+	// data
+	var data = "02";
+
+	// version
+	data = data + "00";
+
+	// claim
+	// TODO: !!! var int
+	len = $claims['claims'].length
+	lenstr = numStoreInMemory(len.toString(16), 2);
+	data = data + lenstr
+
+	//console.log("len: ", len);
+	for ( var k=0; k<len; k++ ) {
+		txid = $claims['claims'][k]['txid'];
+		data = data + ab2hexstring(reverseArray(hexstring2ab(txid)));
+
+		vout = $claims['claims'][k]['vout'].toString(16);
+		data = data + numStoreInMemory(vout, 4);
+	}
+
+	// attribute
+	data = data + "00";
+
+	// Inputs
+	data = data + "00";
+
+	// Outputs len
+	data = data + "01";
+
+	// Outputs[0] AssetID
+	data = data + ab2hexstring(reverseArray(hexstring2ab($claims['assetid'])))
+
+	// Outputs[0] Amount
+	num1 = parseInt($Amount);
+	num1str = numStoreInMemory(num1.toString(16), 16);
+	data = data + num1str;
+
+	// Outputs[0] ProgramHash
+	data = data + myProgramHash.toString()
+
+	//console.log(data);
+
+	return data;
+};
+
 Wallet.ToAddress = function ($ProgramHash) {
 	var data = new Uint8Array(1 + $ProgramHash.length);
 	data.set([23]);

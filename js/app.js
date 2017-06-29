@@ -20,15 +20,15 @@ app.directive('onReadFile', function ($parse) {
 		scope: false,
 		link: function(scope, element, attrs) {
             var fn = $parse(attrs.onReadFile);
-
+            
 			element.on('change', function(onChangeEvent) {
 				var file = (onChangeEvent.srcElement || onChangeEvent.target).files[0];
 				var reader = new FileReader();
-
+                
 				reader.onload = function(onLoadEvent) {
 					var Uints = new Uint8Array(reader.result);
 					var db = new window.SQL.Database(Uints);
-
+					
 					var res = db.exec("SELECT * FROM Key");
 					var passwordHash = new ArrayBuffer();
 					var iv = new ArrayBuffer();
@@ -42,7 +42,7 @@ app.directive('onReadFile', function ($parse) {
 							masterKey = res[0].values[i][1];
 						}
 					}
-
+					
 					res = db.exec("SELECT * FROM Account");
 					var publicKeyHash = new Array()
 					var privateKeyEncrypted = new Array()
@@ -56,13 +56,13 @@ app.directive('onReadFile', function ($parse) {
 							}
 						}
 					}
-
+					
 					var wallet = new Wallet(passwordHash,iv,masterKey,publicKeyHash,privateKeyEncrypted);
-
+					
 					scope.$apply(function() {
 						fn(scope, {$wallet:wallet});
 					});
-
+					
 				};
 
 				reader.readAsArrayBuffer(file);
@@ -74,39 +74,61 @@ app.directive('onReadFile', function ($parse) {
 app.controller('ModalInstanceCtrl', function($scope, $modalInstance, items) {
 	$scope.txModify = false;
 
-	$scope.FromAddress = Wallet.ToAddress(hexstring2ab(items.fromAddress));
+	if ( $scope.txType == '128' ) {
+		$scope.FromAddress = Wallet.ToAddress(hexstring2ab(items.fromAddress));
 
-	$scope.ToAddress = Wallet.ToAddress(items.tx.outputs[0].scripthash);
-
-	var valueStr = ab2hexstring(reverseArray(items.tx.outputs[0].value));
-	$scope.Value = parseInt( valueStr, 16 ) / 100000000;
-	$scope.AssetID = ab2hexstring(reverseArray(items.tx.outputs[0].assetid));
-	$scope.AssetName = "NULL";
-	for ( i=0; i<$scope.coins.length; i++ ) {
-		if ( $scope.coins[i].assetid == $scope.AssetID ) {
-			$scope.AssetName = $scope.coins[i].name;
+		$scope.ToAddress = Wallet.ToAddress(items.tx.outputs[0].scripthash);
+		
+		var valueStr = ab2hexstring(reverseArray(items.tx.outputs[0].value));
+		$scope.Value = parseInt( valueStr, 16 ) / 100000000;
+		$scope.AssetID = ab2hexstring(reverseArray(items.tx.outputs[0].assetid));
+		$scope.AssetName = "NULL";
+		for ( i=0; i<$scope.coins.length; i++ ) {
+			if ( $scope.coins[i].assetid == $scope.AssetID ) {
+				$scope.AssetName = $scope.coins[i].name;
+			}
 		}
-	}
 
-	// ToAddress Verify failed.
-	if ( items.toAddress != $scope.ToAddress ) {
-		console.log( "ToAddress verify failed." );
-		$scope.txModify = true;
-	}
-
-	// Amount Verify failed.
-	if ( items.amount != $scope.Value ) {
-		console.log( "Amount verify failed." );
-		$scope.txModify = true;
-	}
-
-	// FromAddress Verify failed.
-	if ( items.tx.outputs.length == 2 ) {
-		if ( Wallet.ToAddress(items.tx.outputs[1].scripthash) != $scope.FromAddress ) {
-			console.log( "FromAddress verify failed." );
+		// ToAddress Verify failed.
+		if ( items.toAddress != $scope.ToAddress ) {
+			console.log( "ToAddress verify failed." );
 			$scope.txModify = true;
 		}
+
+		// Amount Verify failed.
+		if ( items.amount != $scope.Value ) {
+			console.log( "Amount verify failed." );
+			$scope.txModify = true;
+		} 
+
+		// FromAddress Verify failed.
+		if ( items.tx.outputs.length == 2 ) {
+			if ( Wallet.ToAddress(items.tx.outputs[1].scripthash) != $scope.FromAddress ) {
+				console.log( "FromAddress verify failed." );
+				$scope.txModify = true;
+			} 
+		}
+	} else if ( $scope.txType == '2' ) {
+		$scope.ClaimAddress = Wallet.ToAddress(hexstring2ab(items.claimAddress));
+		
+		var valueStr = ab2hexstring(reverseArray(items.tx.outputs[0].value));
+		$scope.Value = parseInt( valueStr, 16 );
+		$scope.AssetID = ab2hexstring(reverseArray(items.tx.outputs[0].assetid));
+		$scope.AssetName = "小蚁币";
+
+		// Amount Verify failed.
+		if ( items.amount != $scope.Value ) {
+			console.log( "Amount verify failed." );
+			$scope.txModify = true;
+		} 
+
+		// ClaimAddress Verify failed.
+		if ( Wallet.ToAddress(items.tx.outputs[0].scripthash) != $scope.ClaimAddress ) {
+			console.log( "ClaimAddress verify failed." );
+			$scope.txModify = true;
+		} 
 	}
+	
 
 	// ok click
 	$scope.ok = function() {
@@ -516,6 +538,8 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 	$scope.coins = [];
 	$scope.coinSelectIndex = 0;
 
+	$scope.claims = {};
+	
 	$interval(function(){
 		var account = $scope.accounts[$scope.accountSelectIndex];
 		if ( account ) {
@@ -529,8 +553,8 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 		$scope.connectNode();
 
 		$scope.txTypes = [
-			{name:'Transfer Asset',id:'128'},
-			//{name:'Claim Coin',id:'2'},
+			{name:'Transfer Transaction',id:'128'},
+			{name:'Claim Transaction',id:'2'},
 			//{name:'Issue Asset',id:'1'},
         	//{name:'Register Asset',id:'64'},
         ];
@@ -553,6 +577,15 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 			if ( txData == false ) return;
 
 			tx = $scope.getTransferTxData( txData );
+		} else if ( $scope.txType == '2' ) {
+			if ( $scope.walletType == 'externalsignature' ) {
+				txData = $scope.txUnsignedData;
+			} else {
+				txData = $scope.claimTransactionUnsigned();
+			}
+			if ( txData == false ) return;
+
+			tx = $scope.getClaimTxData( txData );
 		} else {
 			return;
 		}
@@ -563,24 +596,35 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 			controller : 'ModalInstanceCtrl', // specify controller for modal
 			resolve : {
 				items : function() {
-					return {
-						'txData' : txData,
-						'tx' : tx,
-						'toAddress' : $scope.Transaction.ToAddress,
-						'amount' : $scope.Transaction.Amount,
-						'fromAddress' : $scope.accounts[$scope.accountSelectIndex].programHash,
+					if ( $scope.txType == '128' ) {
+						// transfer transaction
+						return {
+							'txData' : txData,
+							'tx' : tx,
+							'toAddress' : $scope.Transaction.ToAddress,
+							'amount' : $scope.Transaction.Amount,
+							'fromAddress' : $scope.accounts[$scope.accountSelectIndex].programHash,
+						}
+					}  else if ( $scope.txType == '2' ) {
+						// claim transaction
+						return {
+							'txData' : txData,
+							'tx' : tx,
+							'amount' : $scope.claims['amount'],
+							'claimAddress' : $scope.accounts[$scope.accountSelectIndex].programHash,
+						}
 					}
 				}
 			}
 		});
-		modalInstance.opened.then(function() {// 模态窗口打开之后执行的函数
-    		//console.log('modal is opened');
+		modalInstance.opened.then(function() {// 模态窗口打开之后执行的函数  
+    		//console.log('modal is opened');  
         });
-		modalInstance.result.then(function(result) {
-        	//console.log(result);
-        }, function(reason) {
-        	//console.log(reason);// 点击空白区域，总会输出backdrop
-            //console.log('Modal dismissed at: ' + new Date());
+		modalInstance.result.then(function(result) {  
+        	//console.log(result);  
+        }, function(reason) {  
+        	//console.log(reason);// 点击空白区域，总会输出backdrop  
+            //console.log('Modal dismissed at: ' + new Date());  
     	});
 	};
 
@@ -605,21 +649,30 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 	$scope.changeAcountSelectIndex = function($index) {
 		$scope.accountSelectIndex = $index;
 		$scope.getUnspent( $scope.accounts[$index].address );
+		$scope.getClaims( $scope.accounts[$index].address );
+	};
+
+	$scope.changeTxType = function() {
+		// ClaimTransaction
+		if ( $scope.txType == '2' ) {
+			// get claims
+			$scope.getClaims($scope.accounts[$scope.accountSelectIndex].address);
+		}
 	};
 
     $scope.openFileDialog  = function() {
 		document.getElementById('fselector').click();
 	};
-
+		
 	$scope.showContent = function($wallet) {
 		$scope.wallet = $wallet;
 		$scope.requirePass = true;
 
 		$scope.notifier.info($translate.instant('NOTIFIER_FILE_SELECTED') + document.getElementById('fselector').files[0].name);
-
+		
 		//console.log( $wallet );
 	};
-
+	
 	$scope.onFilePassChange = function () {
 		if ( $scope.filePassword.length > 0 ) {
 			$scope.showBtnUnlock = true;
@@ -651,7 +704,7 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 			$scope.showBtnUnlockExtSig = false;
 		}
 	};
-
+	
 	$scope.decryptWallet = function () {
 
 		try {
@@ -729,6 +782,24 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 		}
 	};
 
+	$scope.getClaims = function ($address) {
+			var host = $scope.hostInfo[$scope.hostSelectIndex];
+			$scope.claims = {}
+			$scope.claims['amount'] = 0;
+
+			$http({
+				method: 'GET',
+				url: host.webapi_host + ':' + host.webapi_port + '/api/v1/address/get_claims/' + $address,
+			}).then(function (res) {
+				if ( res.status == 200 ) {
+
+					$scope.claims = res.data;
+
+					//console.log($scope.claims);
+				}
+		    }).catch(function (err) { console.log(err) })
+	}
+	
 	$scope.getUnspent = function ($address) {
 			var host = $scope.hostInfo[$scope.hostSelectIndex];
 
@@ -746,12 +817,12 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 
 					//console.log($scope.coins);
 				}
-		    }).catch(function (err) { console.log(err) });
+		    }).catch(function (err) { console.log(err) })
 	}
 
 	$scope.connectNode = function () {
 			var host = $scope.hostInfo[$scope.hostSelectIndex];
-
+			
 			$scope.addressBrowseURL = host.webapi_host + ':' + host.webapi_port + '/address/';
 			$scope.txBrowseURL 		= host.webapi_host + ':' + host.webapi_port + '/tx/';
 
@@ -779,7 +850,7 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 	$scope.sendTransactionData = function($txData) {
 		//console.log($txData);
 		var host = $scope.hostInfo[$scope.hostSelectIndex];
-
+		
 		$http({
 				method : 'POST',
 				url : host.restapi_host + ':' + host.restapi_port,
@@ -798,7 +869,7 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 						$scope.notifier.danger( $translate.instant('NOTIFIER_SEND_TRANSACTION_FAILED') + res.data.result )
 					}
 				}
-		    }).catch(function (err) { console.log(err) });
+		    }).catch(function (err) { console.log(err) })
 	}
 
 	$scope.MakeTxAndSend = function( $txUnsignedData ) {
@@ -855,7 +926,7 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 			$scope.notifier.warning($translate.instant('NOTIFIER_REGISTER_AMOUNT_CHECK_FAILED'));
 			return;
 		}
-
+		
 		if ( $scope.registerAsset.assetName.length > 127 ) {
 			return;
 		}
@@ -872,13 +943,13 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 			$scope.notifier.warning($translate.instant('NOTIFIER_REGISTER_AMOUNT_CHECK_FAILED'));
 			return;
 		}
-
+		
 		if ( $scope.registerAsset.assetName.length > 127 ) {
 			return;
 		}
 
 		var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
-		var txData = Wallet.RegisterTransaction( $scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded );
+		var txData = Wallet.RegisterTransaction( $scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded );	
 
 		var privateKey = $scope.accounts[$scope.accountSelectIndex].privatekey;
 		var sign = Wallet.signatureData( txData, privateKey );
@@ -888,7 +959,7 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 	}
 
 	$scope.transferTransactionUnsigned = function() {
-		var reg = /^[0-9]{1,19}([.][0-9]{0,8}){0,1}$/;
+		var reg = /^[0-9]{1,19}([.][0-9]{0,8}){0,1}$/;     
 		var r = $scope.Transaction.Amount.match(reg);
 		if ( r == null ) {
 			$scope.notifier.warning($translate.instant('NOTIFIER_AMOUNT_FORMAT_CHECK_FAILED'));
@@ -900,9 +971,6 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 			return false;
 		}
 
-		//console.log( $scope.coinSelectIndex );
-		//console.log( $scope.coins[$scope.coinSelectIndex] );
-		//console.log( $scope.Transaction.Amount );
 		if ( parseFloat($scope.coins[$scope.coinSelectIndex].balance) < parseFloat($scope.Transaction.Amount) ) {
 			$scope.notifier.danger($translate.instant('NOTIFIER_NOT_ENOUGH_VALUE') + ", " + $translate.instant('ASSET') + ": " + $scope.coins[$scope.coinSelectIndex].name + ", " + $translate.instant('BALANCE') + ": <b>" + $scope.coins[$scope.coinSelectIndex].balance + "</b>, " + $translate.instant('NOTIFIER_SEND_AMOUNT') + ": <b>" + $scope.Transaction.Amount + "</b>" );
 			return false;
@@ -920,7 +988,7 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 	}
 
 	$scope.transferTransaction = function () {
-		var reg = /^[0-9]{1,19}([.][0-9]{0,8}){0,1}$/;
+		var reg = /^[0-9]{1,19}([.][0-9]{0,8}){0,1}$/;     
 		var r = $scope.Transaction.Amount.match(reg);
 		if ( r == null ) {
 			$scope.notifier.warning($translate.instant('NOTIFIER_AMOUNT_FORMAT_CHECK_FAILED'));
@@ -951,6 +1019,34 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 		$scope.sendTransactionData( txRawData );
 	};
 
+	$scope.claimTransactionUnsigned = function() {
+		if ( $scope.claims['amount'] <= 0 ) {
+			$scope.notifier.warning($translate.instant('NOTIFIER_AMOUNT_MUST_GREATER_ZERO'));
+			return false;
+		}
+
+		var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
+		var txData = Wallet.ClaimTransaction($scope.claims, publicKeyEncoded, $scope.accounts[$scope.accountSelectIndex].address, $scope.claims['amount']);
+
+		$scope.txUnsignedData = txData;
+		return txData;
+	};
+
+	$scope.claimTransaction = function() {
+		var txData = $scope.claimTransactionUnsigned();
+
+		var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
+		var privateKey = $scope.accounts[$scope.accountSelectIndex].privatekey;
+		var sign = Wallet.signatureData( txData, privateKey );
+		var txRawData = Wallet.AddContract( txData, sign, publicKeyEncoded );
+
+		//console.log( txRawData );
+		$scope.sendTransactionData( txRawData );
+
+		$scope.claims = {}
+		$scope.claims['amount'] = 0;
+	};
+
 	$scope.SignTxAndSend = function( $txData ) {
 		var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
 		var privateKey = $scope.accounts[$scope.accountSelectIndex].privatekey;
@@ -963,7 +1059,7 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 	$scope.getTransferTxData = function( $txData ) {
 		var ba = new Buffer( $txData, "hex" );
 		var tx = new Transaction();
-
+		
 		// Transfer Type
 		if ( ba[0] != 0x80 ) return;
 		tx.type = ba[0];
@@ -978,7 +1074,7 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 			k = k + 1;
 		}
 
-		// Inputs
+		// Inputs 
 		k = k + 1;
 		len = ba[k];
 		for ( i=0; i<len; i++ ) {
@@ -988,7 +1084,7 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 			k = k + 34;
 		}
 
-		// Outputs
+		// Outputs 
 		k = k + 1;
 		len = ba[k];
 		for ( i=0; i<len; i++ ) {
@@ -1001,11 +1097,63 @@ app.controller("NeoWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 
 		return tx;
 	};
+
+	$scope.getClaimTxData = function( $txData ) {
+		var ba = new Buffer( $txData, "hex" );
+		var tx = new ClaimTransaction();
+		
+		// Transfer Type
+		if ( ba[0] != 0x02 ) return;
+		tx.type = ba[0];
+
+		// Version
+		tx.version = ba[1];
+
+		// Claim
+		var k = 2;
+		var len = ba[k];
+		for ( i=0; i<len; i++ ) {
+			tx.claims.push( { txid:ba.slice( k+1, k+33 ), index:ba.slice( k+33, k+35 ) } );
+			k = k + 34;
+		}
+
+		// Attributes
+		k = k + 1;
+		len = ba[k];
+		for ( i=0; i<len; i++ ) {
+			k = k + 1;
+		}
+
+		// Inputs 
+		k = k + 1;
+		len = ba[k];
+		// Input len = 0
+
+		// Outputs 
+		k = k + 1;
+		len = ba[k];
+		for ( i=0; i<len; i++ ) {
+			tx.outputs.push( { assetid:ba.slice( k+1, k+33 ), value:ba.slice( k+33, k+41 ), scripthash:ba.slice( k+41, k+61 ) } );
+			k = k + 60;
+		}
+
+		return tx;
+	};
+
 });
 
 var Transaction = function Transaction() {
 	this.type = 0;
 	this.version = 0;
+	this.attributes = "";
+	this.inputs = [];
+	this.outputs = [];
+};
+
+var ClaimTransaction = function ClaimTransaction() {
+	this.type = 0;
+	this.version = 0;
+	this.claims = [];
 	this.attributes = "";
 	this.inputs = [];
 	this.outputs = [];

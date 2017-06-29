@@ -25,7 +25,11 @@ html,body{
 }
 
 span {
-	word-break:break-all; 
+	word-wrap: break-word;
+}
+
+.show-password {
+	-webkit-text-security: disc;
 }
 
 .btn-address .caretico {
@@ -50,6 +54,11 @@ margin-left:1em;
 	color: #ff0000;
 }
 
+.alert a,
+.alert p {
+	color: #fff;
+}
+
 .footer {
 	width:100%;
 	background-color: #3E3F3A;
@@ -60,6 +69,7 @@ margin-left:1em;
     margin-top: -100px;
 }
 
+.footer a,
 .footer p {
 	color: #fff;
 }
