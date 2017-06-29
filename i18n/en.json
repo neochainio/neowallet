@@ -69,6 +69,9 @@
 "MT_ACCOUNT_BALANCE":"Account Balance",
 "MT_SEND_TRANSACTION":"Send Transaction",
 
+"TX_TYPE_TRANSFER_TRANSACTION":"Transfer Transaction",
+"TX_TYPE_CLAIM_TRANSACTION":"Claim Transaction",
+
 "MT_ISSUE_ASSETID":"Issue AssetID",
 "MT_ISSUE_AMOUNT":"Issue Amount",
 "BTN_ISSUE_TRANSACTION":"Issue Transaction",
@@ -84,6 +87,11 @@
 "MT_ASSET_AMOUNT":"Asset Amount",
 "BTN_REGISTER_TRANSACTION":"Register Transaction",
 "BTN_GET_REGISTER_TRANSACTION":"Get Register Transaction",
+
+"TX_CL_CLAIM_AMOUNT":"Claim Amount(ANC)",
+"TX_CL_CLAIM_ADDRESS":"Claim Address",
+"TX_CL_BTN_CLAIM_TRANSACTION":"Claim Transaction",
+"TX_CL_BTN_GET_CLAIM_TRANSACTION":"Get Claim Transaction",
 
 "MT_YOU_ARE_CONNECTED_TO_NODE":"You are connected to node",
 "MT_PROVIDED_BY":"provided by",
