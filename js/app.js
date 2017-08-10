@@ -192,7 +192,7 @@ app.controller("hashCalcCtrl", function($scope,$sce) {
 	}
 });
 */
-app.controller("ToolsCtrl", function($scope,$sce) {
+app.controller("ToolsCtrl", function($scope,$translate,$sce) {
 	$scope.wif = "";
 	$scope.privateKey = "";
 	$scope.publicKey = "";
