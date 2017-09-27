@@ -101,6 +101,7 @@
 "MT_MODAL_DANGER_1":"SERIOUS ERROR：Transaction Data is different with the fill, you can't send this transaction!",
 
 "BTN_GENERATE_PRIVATEKEY":"Generate PrivateKey",
+"BTN_GENERATE_WIFKEY": "Generate WIFKey",
 "BTN_GENERATE_PUBLICKEY":"Generate PublicKey",
 "BTN_GENERATE_PUBLICKEY_ENCODE": "PublicKey Encode",
 "BTN_GENERATE_SCRIPT":"Generate Script",

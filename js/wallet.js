@@ -669,6 +669,24 @@ Wallet.getPrivateKeyFromWIF = function ($wif) {
 
 };
 
+Wallet.getWIFFromPrivateKey = function ($privateKey) {
+	var data = hexstring2ab($privateKey);
+	data = [0x80].concat(data).concat([0x01]);
+
+	var dataHexString = CryptoJS.enc.Hex.parse(ab2hexstring(data));
+	var dataSha256 = CryptoJS.SHA256(dataHexString);
+	var dataSha256_2 = CryptoJS.SHA256(dataSha256);
+	
+	var dataSha256Buffer = hexstring2ab(dataSha256_2.toString())
+	var checksum = dataSha256Buffer.slice(0, 4);
+	data = data.concat(checksum)
+
+	if (data.length != 38 || data[0] != 0x80 || data[33] != 0x01) {
+		return -1;
+	}
+	return base58.encode(data)
+};
+
 Wallet.getPublicKey = function ($privateKey, $encode) {
 	var ecparams = ecurve.getCurveByName('secp256r1');
 	var curvePt = ecparams.G.multiply(BigInteger.fromBuffer(hexstring2ab($privateKey)));

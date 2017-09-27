@@ -682,7 +682,18 @@
 					<hr />
 					
 					<div class="col-lg-12 col-md-12 col-sm-12">
-						
+
+						<!-- WIF from Private key -->
+						<div class="form-group">
+								<label class="control-label" translate="PRIVATE_KEY">Private Key</label><br />
+							<div class="input-group">
+								<input type="text" class="form-control" ng-model="privateKeyToWif" name="privateKeyToWif" placeholder="5e980ec243c32cbbd2b5addc4f643774a6a6bb7123b49244b6e67cf56122eaa0" aria-label="privateKey" />
+								<span class="input-group-btn">
+									<button type="button" class="btn btn-primary" ng-click="getWIFKeyFromPrivateKey()" translate="BTN_GENERATE_WIFKEY">&nbspGenerate WIF&nbsp</button>
+								</span>
+							</div>
+						</div>
+
 						<!-- WIF -->
 						<div class="form-group">
 							<label class="control-label">WIF</label><br />
